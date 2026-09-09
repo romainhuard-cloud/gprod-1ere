@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP – DUER &amp; Prévention | 40 questions | Lycée Vaucanson</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --du:#c62828;--du-clair:#ffebee;--du-mid:#e53935;
+  --danger:#c0392b;--danger-clair:#fde8e8;
+  --warning:#e67e22;--warning-clair:#fef3e2;
+  --ok:#27ae60;--ok-clair:#d4edda;--ok-fonce:#1a6b3c;
+  --info:#2980b9;--info-clair:#d6eaf8;
+  --gris:#8a9bac;--gris-clair:#e8ecf0;--gris-tres-clair:#f4f6f8;
+  --texte:#2c3e50;--radius:10px;--shadow:0 4px 16px rgba(44,62,80,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;background:var(--gris-tres-clair);color:var(--texte);min-height:100vh;}
+
+header{
+  background:
+    linear-gradient(135deg,rgba(198,40,40,0.92) 0%,rgba(30,10,10,0.90) 100%),
+    url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=80") center center/cover no-repeat;
+  color:#fff;padding:16px 28px;display:flex;align-items:center;gap:20px;
+  box-shadow:0 4px 22px rgba(0,0,0,.30);position:sticky;top:0;z-index:1000;
+}
+header img.logo{height:68px;border-radius:8px;background:#fff;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+.header-text h1{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;line-height:1.2;}
+.header-text p{font-size:.82rem;opacity:.85;margin-top:2px;}
+.header-right{margin-left:auto;display:flex;gap:10px;align-items:flex-start;}
+.header-machine{flex:1;display:flex;align-items:center;justify-content:center;}
+.header-machine span{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.4);opacity:0.95;text-align:center;}
+.hbox{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 14px;text-align:center;}
+.hbox-label{font-size:.68rem;opacity:.8;text-transform:uppercase;letter-spacing:1px;}
+#timer{font-family:'Barlow Condensed',monospace;font-size:1.75rem;font-weight:700;letter-spacing:2px;}
+#timer.urgent{color:#ffcc00;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.progress-section{background:#fff;padding:13px 28px;border-bottom:2px solid var(--gris-clair);box-shadow:0 2px 8px rgba(0,0,0,.08);position:sticky;top:101px;z-index:999;}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:7px;font-size:.8rem;color:var(--gris);font-weight:600;}
+.progress-bar-track{background:var(--gris-clair);border-radius:20px;height:13px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--du),var(--du-mid));transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;}
+.progress-milestones{display:flex;justify-content:space-between;margin-top:7px;}
+.milestone{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.68rem;color:var(--gris);font-weight:600;transition:color .3s;}
+.milestone-dot{width:11px;height:11px;border-radius:50%;background:var(--gris-clair);border:2px solid var(--gris);transition:all .3s;}
+.milestone.done .milestone-dot{background:var(--du);border-color:#7f0000;}
+.milestone.done{color:var(--du);}
+
+.container{max-width:960px;margin:0 auto;padding:28px 18px 60px;}
+
+.eleve-box{background:#fff;border-radius:var(--radius);padding:18px 22px;margin-bottom:22px;box-shadow:var(--shadow);border-left:5px solid var(--du);display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;}
+.eleve-box .form-group{flex:1;min-width:180px;}
+.eleve-box label{display:block;font-size:.76rem;font-weight:700;color:var(--gris);margin-bottom:4px;text-transform:uppercase;}
+.eleve-box input,.eleve-box select{width:100%;padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.95rem;font-family:'Barlow',sans-serif;background:#fff;}
+.eleve-box input:focus,.eleve-box select:focus{outline:none;border-color:var(--du);}
+.field-error{border-color:#e74c3c!important;background:#fff5f5!important;animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.required-hint{display:none;color:#e74c3c;font-size:.72rem;font-weight:700;margin-top:3px;}
+.required-hint.show{display:block;}
+.eleve-box label .req{color:#e74c3c;margin-left:2px;}
+
+.video-bloc{background:#fff;border-radius:var(--radius);margin-bottom:26px;box-shadow:var(--shadow);overflow:hidden;border:3px solid var(--du);}
+.video-header{background:linear-gradient(135deg,#7f0000,var(--du));color:#fff;padding:14px 22px;display:flex;align-items:center;gap:14px;}
+.video-header-icon{font-size:1.6rem;flex-shrink:0;}
+.video-header-text h3{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.video-header-text p{font-size:.78rem;opacity:.85;margin-top:2px;}
+.video-header-badge{margin-left:auto;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 14px;font-size:.75rem;font-weight:700;white-space:nowrap;letter-spacing:.5px;}
+.video-body{padding:20px 22px;}
+.video-consigne{background:var(--du-clair);border:2px solid var(--du-mid);border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:.88rem;line-height:1.7;}
+.video-consigne strong{color:var(--du);}
+.video-consigne ol{margin:8px 0 0 18px;display:flex;flex-direction:column;gap:4px;}
+.video-wrapper{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;box-shadow:0 4px 20px rgba(0,0,0,.25);}
+.video-wrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:10px;}
+.video-checklist{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.video-check-item{background:var(--gris-tres-clair);border:1px solid var(--gris-clair);border-radius:8px;padding:7px 12px;font-size:.82rem;display:flex;align-items:center;gap:7px;cursor:pointer;transition:all .2s;user-select:none;}
+.video-check-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--du);}
+.video-check-item:has(input:checked){background:var(--ok-clair);border-color:var(--ok);color:var(--ok-fonce);}
+.video-start-btn{width:100%;margin-top:14px;padding:12px;background:linear-gradient(135deg,#7f0000,var(--du));color:#fff;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.video-start-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 16px rgba(198,40,40,.3);}
+.video-start-btn:disabled{background:var(--gris);cursor:not-allowed;transform:none;box-shadow:none;}
+
+.intro-box{background:#fff;border-radius:var(--radius);padding:22px 26px;margin-bottom:26px;box-shadow:var(--shadow);border-left:5px solid var(--du);}
+.intro-box h2{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;color:var(--du);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.intro-box p{font-size:.93rem;line-height:1.6;color:#555;margin-bottom:7px;}
+
+.duer-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+.duer-step{border-radius:10px;padding:13px 10px;text-align:center;border:2px solid;}
+.duer-step.d1{background:#ffebee;border-color:#c62828;color:#7f0000;}
+.duer-step.d2{background:#fff3e0;border-color:#e67e22;color:#a85200;}
+.duer-step.d3{background:#eafaf1;border-color:#27ae60;color:#0f4525;}
+.duer-step-num{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;display:block;}
+.duer-step-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin:4px 0 3px;}
+.duer-step-desc{font-size:.7rem;line-height:1.4;opacity:.85;}
+
+.situation-box{background:linear-gradient(135deg,#7f0000 0%,#c62828 100%);color:#fff;border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;box-shadow:var(--shadow);}
+.situation-box h3{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:10px;letter-spacing:.5px;}
+.situation-box p{font-size:.9rem;line-height:1.6;opacity:.92;}
+.situation-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;}
+.kpi{background:rgba(255,255,255,.18);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,.25);}
+.kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:800;display:block;}
+.kpi-label{font-size:.68rem;opacity:.85;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;display:block;}
+
+.section-block{background:#fff;border-radius:var(--radius);padding:0;margin-bottom:22px;box-shadow:var(--shadow);overflow:hidden;}
+.section-header{color:#fff;padding:13px 22px;display:flex;align-items:center;gap:12px;}
+.section-header.s1{background:linear-gradient(135deg,#7f0000,#c62828);}
+.section-header.s2{background:linear-gradient(135deg,#4a0072,#7b1fa2);}
+.section-header.s3{background:linear-gradient(135deg,#154360,#2980b9);}
+.section-header.s4{background:linear-gradient(135deg,#0f4525,#27ae60);}
+.section-header.s5{background:linear-gradient(135deg,#4a4000,#f39c12);}
+.section-number{background:rgba(255,255,255,.25);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0;}
+.section-title-block h2{font-family:'Barlow Condensed',sans-serif;font-size:1.08rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.section-title-block p{font-size:.75rem;opacity:.85;margin-top:2px;}
+.section-body{padding:20px 22px;}
+
+.question-block{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--gris-clair);}
+.question-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.question-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--du);margin-bottom:5px;}
+.competence-tag{display:inline-block;background:var(--du-clair);color:var(--du);font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:12px;margin-left:6px;text-transform:uppercase;}
+.question-text{font-size:.95rem;line-height:1.6;color:var(--texte);margin-bottom:12px;font-weight:500;}
+.context-box{background:var(--gris-tres-clair);border:1px solid var(--gris-clair);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;line-height:1.5;color:#555;}
+.context-box strong{color:var(--du);}
+.info-box{background:var(--du-clair);border:2px solid var(--du-mid);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;line-height:1.6;}
+.info-box strong{color:var(--du);}
+.warning-box{background:var(--warning-clair);border:2px solid var(--warning);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;line-height:1.5;}
+.warning-box strong{color:#a85200;}
+
+/* Matrice de criticité */
+.matrice-box{background:linear-gradient(135deg,#ffebee,#fff8f6);border:2px solid var(--du-mid);border-radius:12px;padding:16px 18px;margin:14px 0;}
+.matrice-box h4{font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:var(--du);margin-bottom:12px;text-transform:uppercase;}
+.matrice-grid{display:grid;grid-template-columns:80px repeat(4,1fr);gap:3px;font-size:.72rem;font-weight:700;text-align:center;}
+.matrice-hdr{padding:6px 4px;border-radius:4px;background:var(--du);color:#fff;}
+.matrice-row-hdr{padding:6px 4px;border-radius:4px;background:#555;color:#fff;display:flex;align-items:center;justify-content:center;}
+.mc{padding:6px 4px;border-radius:4px;font-size:.7rem;}
+.mc-t{background:#FFEB3B;color:#333;}  /* Tolérable */
+.mc-m{background:#FF9800;color:#fff;}  /* Modéré */
+.mc-i{background:#f44336;color:#fff;}  /* Inacceptable */
+.mc-c{background:#b71c1c;color:#fff;}  /* Critique */
+
+.options-list{display:flex;flex-direction:column;gap:7px;}
+.option-item{display:flex;align-items:center;gap:11px;padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;cursor:pointer;transition:all .2s;font-size:.89rem;}
+.option-item:hover{border-color:var(--du-mid);background:var(--du-clair);}
+.option-item input[type=radio]{width:17px;height:17px;accent-color:var(--du);cursor:pointer;flex-shrink:0;}
+.option-item.correct{border-color:var(--ok);background:var(--ok-clair);}
+.option-item.incorrect{border-color:var(--danger);background:var(--danger-clair);}
+
+.text-input{width:100%;padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.93rem;font-family:'Barlow',sans-serif;transition:border-color .2s;resize:vertical;}
+.text-input:focus{outline:none;border-color:var(--du);}
+.text-input.correct{border-color:var(--ok);background:var(--ok-clair);}
+.number-input-wrap{display:flex;align-items:center;gap:9px;margin-top:8px;}
+.number-input{width:110px;padding:9px 12px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.98rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-align:center;transition:border-color .2s;}
+.number-input:focus{outline:none;border-color:var(--du);}
+.number-input.correct{border-color:var(--ok);background:var(--ok-clair);}
+.number-input.incorrect{border-color:var(--danger);background:var(--danger-clair);}
+.unit-label{font-size:.88rem;color:var(--gris);}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem;margin-bottom:8px;}
+.tbl th{background:var(--du);color:#fff;padding:9px 11px;text-align:left;font-weight:700;font-size:.8rem;}
+.tbl td{padding:8px 11px;border-bottom:1px solid var(--gris-clair);vertical-align:middle;}
+.tbl tr:nth-child(even) td{background:var(--gris-tres-clair);}
+.tbl select{width:100%;padding:5px 9px;border:1.5px solid var(--gris-clair);border-radius:6px;font-size:.86rem;font-family:'Barlow',sans-serif;background:#fff;}
+.tbl select.correct{border-color:var(--ok);background:var(--ok-clair);}
+.tbl select.incorrect{border-color:var(--danger);background:var(--danger-clair);}
+
+.badge-r{background:#ffebee;color:#7f0000;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.badge-o{background:#fff3e0;color:#a85200;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.badge-v{background:#eafaf1;color:#0f4525;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+
+.validate-btn{margin-top:11px;padding:8px 20px;background:var(--du);color:#fff;border:none;border-radius:8px;font-family:'Barlow',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
+.validate-btn:hover{background:#7f0000;transform:translateY(-1px);}
+.validate-btn:disabled{background:var(--gris);cursor:not-allowed;transform:none;}
+
+.feedback{display:none;margin-top:9px;padding:9px 13px;border-radius:8px;font-size:.86rem;font-weight:500;align-items:flex-start;gap:7px;}
+.feedback.show{display:flex;}
+.feedback.ok{background:var(--ok-clair);color:var(--ok-fonce);border:1px solid var(--ok);}
+.feedback.nok{background:var(--danger-clair);color:var(--danger);border:1px solid var(--danger);}
+.feedback-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.feedback-content{line-height:1.5;}
+
+.voir-note-btn{text-align:center;margin-top:22px;}
+.voir-note-btn button{padding:12px 28px;background:var(--du);color:#fff;border:none;border-radius:8px;font-family:'Barlow',sans-serif;font-size:.98rem;font-weight:700;cursor:pointer;}
+.voir-note-btn button:hover{background:#7f0000;}
+.final-section{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);text-align:center;border:3px solid var(--du);margin-top:24px;}
+.final-section h2{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;color:var(--du);margin-bottom:8px;}
+.final-note{font-size:3rem;font-weight:800;font-family:'Barlow Condensed',sans-serif;color:var(--du);margin:12px 0;display:none;}
+.comp-summary{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:14px 0;}
+.send-btn{margin:8px;padding:13px 28px;background:linear-gradient(135deg,#7f0000,var(--du));color:#fff;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(198,40,40,.3);letter-spacing:.5px;}
+.send-btn:hover{transform:translateY(-2px);}
+.send-btn.pdf-btn{background:linear-gradient(135deg,#154360,#2980b9);}
+#send-status{margin-top:12px;font-size:.88rem;color:var(--gris);font-style:italic;}
+#send-status.success{color:var(--ok-fonce);font-style:normal;font-weight:600;}
+
+@media(max-width:640px){
+  header{flex-wrap:wrap;padding:12px 14px;}
+  .duer-steps{grid-template-columns:1fr 1fr;}
+  .situation-kpis{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img class="logo" src="https://services.ard.fr/fileadmin/users/grenoble-vaucanson/logo.jpg" alt="Lycée Vaucanson" onerror="this.style.display='none'">
+  <div class="header-text">
+    <h1>TP – DUER | Cotation des Risques & Plan de Prévention</h1>
+    <p>BAC PRO PLP &nbsp;·&nbsp; CAP CIP</p>
+    <p>Lycée Polyvalent Vaucanson – Grenoble</p>
+  </div>
+  <div class="header-machine">
+    <span>⚠️ DUER<br><span style="font-size:.95rem;font-weight:600;letter-spacing:1px;">Risques & Prévention</span></span>
+  </div>
+  <div class="header-right">
+    <div class="hbox">
+      <div class="hbox-label">⏱ Temps restant</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div id="timer">2:00:00</div>
+        <button id="pause-btn" onclick="togglePause()" title="Pause/Reprendre" style="background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);border-radius:6px;color:#fff;font-size:1rem;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏸</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="progress-section">
+  <div class="progress-header">
+    <span>Avancement du TP</span>
+    <span id="progress-text">0 / 40 questions validées</span>
+  </div>
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <div class="progress-milestones">
+    <div class="milestone" id="m1"><div class="milestone-dot"></div>Bases (10)</div>
+    <div class="milestone" id="m2"><div class="milestone-dot"></div>Cotation (18)</div>
+    <div class="milestone" id="m3"><div class="milestone-dot"></div>Action (28)</div>
+    <div class="milestone" id="m4"><div class="milestone-dot"></div>EPI (35)</div>
+    <div class="milestone" id="m5"><div class="milestone-dot"></div>Terminé ✓</div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="eleve-box">
+  <div class="form-group"><label>Nom <span class="req">*</span></label><input type="text" id="eleve-nom" placeholder="Votre nom...">
+    <div class="required-hint" id="hint-nom">⚠ Le nom est obligatoire</div></div>
+  <div class="form-group"><label>Prénom <span class="req">*</span></label><input type="text" id="eleve-prenom" placeholder="Votre prénom...">
+    <div class="required-hint" id="hint-prenom">⚠ Le prénom est obligatoire</div></div>
+  <div class="form-group">
+    <label>Classe <span class="req">*</span></label>
+    <select id="eleve-classe">
+      <option value="">-- Sélectionnez --</option>
+      <option>2PMIA1</option><option>2PMIA2</option><option>2PMIA3</option>
+      <option>2PMIA4</option><option>2PMIA5</option><option>1PLP</option>
+      <option>TPLP</option><option>1CIP G1</option><option>1CIP G2</option>
+      <option>2CIP G1</option><option>2CIP G2</option><option>GRETA</option>
+    </select>
+    <div class="required-hint" id="hint-classe">⚠ La classe est obligatoire</div>
+  </div>
+</div>
+
+<div class="video-bloc" id="video-block">
+  <div class="video-header">
+    <div class="video-header-icon">🎬</div>
+    <div class="video-header-text">
+      <h3>Étape 1 — Visionner la vidéo avant de commencer</h3>
+      <p>À regarder avant de commencer le TP &nbsp;·&nbsp; Source : Tube Enseignement Professionnel</p>
+    </div>
+    <div class="video-header-badge">📌 Obligatoire</div>
+  </div>
+  <div class="video-body">
+    <div class="video-consigne">
+      <strong>📋 Consigne :</strong> Regardez attentivement la vidéo sur le DUER et la prévention des risques. Prenez des notes. Cochez chaque point clé après l'avoir compris, puis cliquez sur le bouton pour accéder aux questions.
+      <ol>
+        <li>Retenez la définition du <strong>DUER</strong>, sa base légale et qui est responsable de le rédiger</li>
+        <li>Comprenez la méthode de <strong>cotation des risques</strong> (Probabilité × Gravité = Criticité)</li>
+        <li>Mémorisez la hiérarchie des <strong>9 principes généraux de prévention</strong></li>
+        <li>Observez comment rédiger un <strong>plan de prévention</strong> avec actions et délais</li>
+      </ol>
+    </div>
+    <div class="video-wrapper">
+      <iframe
+        title="DUER et prévention des risques"
+        src="https://tube-enseignement-professionnel.apps.education.fr/videos/embed/jbuwp92f2yZS4yypC6211K?title=0&warningTitle=0&controlBar=1&peertubeLink=0&p2p=0"
+        allowfullscreen
+        sandbox="allow-same-origin allow-scripts allow-popups"
+        loading="lazy">
+      </iframe>
+    </div>
+    <div class="video-checklist">
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je connais la définition du DUER et son cadre réglementaire</label>
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je maîtrise la méthode de cotation Probabilité × Gravité</label>
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je connais les 9 principes généraux de prévention dans l'ordre</label>
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je sais rédiger un plan de prévention avec responsable et délai</label>
+    </div>
+    <button class="video-start-btn" id="video-start-btn" onclick="deverrouillerTP()" disabled>
+      🔒 Cochez tous les points clés pour débloquer le TP
+    </button>
+  </div>
+</div>
+
+<div id="tp-content" style="pointer-events:none;opacity:.4;user-select:none;filter:blur(1.5px);">
+
+<div class="intro-box">
+  <h2>⚠️ Qu'est-ce que le DUER ?</h2>
+  <p>Le <strong>Document Unique d'Évaluation des Risques (DUER)</strong> est un document obligatoire dans toute entreprise d'au moins 1 salarié (décret n°2001-1016 du 5 novembre 2001). Il recense l'ensemble des risques professionnels identifiés dans l'entreprise, les évalue et propose des mesures de prévention.</p>
+  <p>Sa mise à jour est obligatoire <strong>au minimum une fois par an</strong>, lors de tout aménagement modifiant les conditions de travail, et après tout accident du travail. L'employeur est seul responsable de son existence et de sa mise à jour. En cas d'absence ou d'insuffisance, il s'expose à des sanctions pénales.</p>
+  <div class="duer-steps">
+    <div class="duer-step d1">
+      <span class="duer-step-num">1️⃣</span>
+      <span class="duer-step-title">Identifier</span>
+      <span class="duer-step-desc">Recenser toutes les situations dangereuses par unité de travail (poste, atelier, zone)</span>
+    </div>
+    <div class="duer-step d2">
+      <span class="duer-step-num">2️⃣</span>
+      <span class="duer-step-title">Évaluer</span>
+      <span class="duer-step-desc">Coter chaque risque : Probabilité (P) × Gravité (G) = Criticité (C) → niveau de priorité</span>
+    </div>
+    <div class="duer-step d3">
+      <span class="duer-step-num">3️⃣</span>
+      <span class="duer-step-title">Prévenir</span>
+      <span class="duer-step-desc">Définir les mesures selon les 9 principes généraux de prévention (suppression, protection collective, EPI…)</span>
+    </div>
+  </div>
+  <p style="font-size:.84rem;color:#777;">💡 La <strong>criticité</strong> est le produit de la probabilité par la gravité. Plus la criticité est élevée, plus le risque est prioritaire. Un risque critique (C ≥ 9) exige une action immédiate avant toute reprise d'activité.</p>
+</div>
+
+<div class="situation-box">
+  <h3>🏭 Mise en situation – Plateau de Production, Lycée Vaucanson</h3>
+  <p>Vous êtes chargé(e) de mettre à jour le <strong>DUER du plateau de production</strong> du lycée Vaucanson à la suite de travaux de rénovation. Plusieurs nouvelles situations dangereuses ont été identifiées lors d'une visite terrain réalisée avec le référent sécurité. Votre mission : coter chaque risque, déterminer les priorités et rédiger le plan de prévention associé.</p>
+  <div class="situation-kpis">
+    <div class="kpi"><span class="kpi-val">8</span><span class="kpi-label">Risques identifiés</span></div>
+    <div class="kpi"><span class="kpi-val">3</span><span class="kpi-label">Unités de travail</span></div>
+    <div class="kpi"><span class="kpi-val">P×G</span><span class="kpi-label">Méthode de cotation</span></div>
+    <div class="kpi"><span class="kpi-val">9 PGP</span><span class="kpi-label">Principes de prévention</span></div>
+  </div>
+</div>
+
+<!-- Tableau des risques identifiés -->
+<div class="section-block">
+  <div class="section-header s1">
+    <div class="section-number">📋</div>
+    <div class="section-title-block">
+      <h2>Inventaire des risques – Plateau Vaucanson</h2>
+      <p>Situations dangereuses identifiées lors de la visite terrain post-travaux</p>
+    </div>
+  </div>
+  <div class="section-body">
+    <div style="overflow-x:auto;">
+      <table class="tbl">
+        <thead><tr><th style="width:30px;">N°</th><th>Unité de travail</th><th>Situation dangereuse identifiée</th><th style="width:80px;">P (1–4)</th><th style="width:80px;">G (1–4)</th><th style="width:80px;">C = P×G</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:800;text-align:center;">R1</td><td>Zone usinage CNC</td><td>Projections de copeaux chauds lors du tournage sans écran de protection</td><td style="text-align:center;font-weight:700;">3</td><td style="text-align:center;font-weight:700;">3</td><td style="text-align:center;font-weight:700;color:var(--du);">9</td></tr>
+          <tr><td style="font-weight:800;text-align:center;">R2</td><td>Zone usinage CNC</td><td>Sol glissant à cause de copeaux et d'huile d'usinage répandus dans l'allée</td><td style="text-align:center;font-weight:700;">3</td><td style="text-align:center;font-weight:700;">2</td><td style="text-align:center;font-weight:700;color:#e67e22;">6</td></tr>
+          <tr><td style="font-weight:800;text-align:center;">R3</td><td>Atelier soudure</td><td>Inhalation de fumées de soudure sans système d'aspiration ni masque respiratoire</td><td style="text-align:center;font-weight:700;">4</td><td style="text-align:center;font-weight:700;">4</td><td style="text-align:center;font-weight:700;color:#7f0000;">16</td></tr>
+          <tr><td style="font-weight:800;text-align:center;">R4</td><td>Atelier soudure</td><td>Contact électrique avec poste à souder défectueux (câble dénudé repéré)</td><td style="text-align:center;font-weight:700;">2</td><td style="text-align:center;font-weight:700;">4</td><td style="text-align:center;font-weight:700;color:var(--du);">8</td></tr>
+          <tr><td style="font-weight:800;text-align:center;">R5</td><td>Atelier soudure</td><td>Brûlures par projection de métal fondu sans tablier ni gants de protection</td><td style="text-align:center;font-weight:700;">3</td><td style="text-align:center;font-weight:700;">3</td><td style="text-align:center;font-weight:700;color:var(--du);">9</td></tr>
+          <tr><td style="font-weight:800;text-align:center;">R6</td><td>Zone stockage</td><td>Chute de charges lors de la manutention manuelle de caisses de 30 kg sans aide</td><td style="text-align:center;font-weight:700;">2</td><td style="text-align:center;font-weight:700;">3</td><td style="text-align:center;font-weight:700;color:#e67e22;">6</td></tr>
+          <tr><td style="font-weight:800;text-align:center;">R7</td><td>Zone stockage</td><td>Étagères surchargées et mal fixées pouvant basculer (stabilité non vérifiée)</td><td style="text-align:center;font-weight:700;">2</td><td style="text-align:center;font-weight:700;">4</td><td style="text-align:center;font-weight:700;color:var(--du);">8</td></tr>
+          <tr><td style="font-weight:800;text-align:center;">R8</td><td>Zone usinage CNC</td><td>Bruit excessif des machines CNC (mesures : 87 dB) sans protection auditive disponible</td><td style="text-align:center;font-weight:700;">4</td><td style="text-align:center;font-weight:700;">2</td><td style="text-align:center;font-weight:700;color:#e67e22;">8</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.78rem;color:#888;margin-top:8px;">P = Probabilité (1=rare, 2=possible, 3=probable, 4=très probable) | G = Gravité (1=sans arrêt, 2=arrêt court, 3=blessure grave, 4=décès/invalidité) | C = Criticité = P × G</p>
+  </div>
+</div>
+
+<div class="section-block">
+  <div class="section-header s1">
+    <div class="section-number">📚</div>
+    <div class="section-title-block">
+      <h2>Partie 1 – Bases réglementaires du DUER</h2>
+      <p>Cadre légal et méthode d'évaluation | Q1 à Q10</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="info-box">
+      <strong>📖 Rappel :</strong> Le <strong>DUER</strong> (Document Unique d'Évaluation des Risques) est obligatoire dès le 1er salarié (décret 2001-1016). Il identifie les <strong>dangers</strong> (sources de dommage), évalue les <strong>risques</strong> (Probabilité × Gravité), et hiérarchise les actions de prévention. Mise à jour annuelle obligatoire + après tout aménagement ou accident grave.
+    </div>
+    <div class="question-block" id="qb1">
+      <div class="question-label">Question 1 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Quel texte réglementaire rend le DUER <strong>obligatoire</strong> et à partir de combien de salarié(s) ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q1" value="a"> La loi du 4 août 1982 sur les droits des travailleurs – applicable aux entreprises de plus de 50 salariés (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q1" value="b"> La directive européenne de 2004 sur la santé au travail – applicable uniquement aux industries à risque (une réponse plausible à première vue mais qui ne convient pas ici)</label>
+        <label class="option-item"><input type="radio" name="q1" value="c"> Le Code du travail article L4121-3 de 2008 – obligatoire dans les entreprises de plus de 10 salariés — ce n'est pas le bon critère à retenir dans ce contexte</label>
+        <label class="option-item"><input type="radio" name="q1" value="d"> Le décret n°2001-1016 du 5 novembre 2001 – obligatoire dès le premier salarié, quelle que soit la taille de l'entreprise</label>
+      </div>
+      <button class="validate-btn" onclick="val(1)">✔ Valider</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+    <div class="question-block" id="qb2">
+      <div class="question-label">Question 2 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Dans le DUER, qu'est-ce qu'une <strong>unité de travail</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q2" value="a"> Le nombre d'heures de travail hebdomadaire légal fixé à 35h pour chaque salarié (ce choix n'a qu'un effet limité sur le résultat recherché) (option séduisante en apparence mais erronée sur le fond)</label>
+        <label class="option-item"><input type="radio" name="q2" value="b"> Une unité de mesure de la pénibilité exprimée en points selon le compte personnel de prévention — ce choix ne correspond pas à la méthode ou à la définition attendue ici</label>
+        <label class="option-item"><input type="radio" name="q2" value="c"> Le nombre minimum de travailleurs requis pour qu'une activité puisse être réalisée en toute sécurité — cette option ne respecte pas les règles de la démarche présentée — ce n'est pas le bon critère à retenir dans ce contexte</label>
+        <label class="option-item"><input type="radio" name="q2" value="d"> Un regroupement de postes, de zones ou d'activités présentant des conditions d'exposition aux risques similaires, permettant une analyse cohérente des dangers</label>
+      </div>
+      <button class="validate-btn" onclick="val(2)">✔ Valider</button>
+      <div class="feedback" id="fb2"></div>
+    </div>
+    <div class="question-block" id="qb3">
+      <div class="question-label">Question 3 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">À quelle fréquence <strong>minimum</strong> le DUER doit-il être mis à jour, et dans quelles autres circonstances ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q3" value="a"> Tous les 5 ans, uniquement si l'inspection du travail en fait la demande lors d'un contrôle (option séduisante en apparence mais erronée sur le fond) — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+        <label class="option-item"><input type="radio" name="q3" value="b"> Tous les 3 ans, uniquement lors du renouvellement des contrats d'assurance de l'entreprise (piste à écarter au vu des éléments du cas étudié) — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q3" value="c"> Au minimum une fois par an, et également lors de tout aménagement modifiant les conditions de travail, après tout accident du travail grave ou maladie professionnelle</label>
+        <label class="option-item"><input type="radio" name="q3" value="d"> Uniquement lors du changement de direction ou lors de la signature d'un nouveau contrat collectif de travail — une piste qui n'apporte pas de réponse complète à la question posée — cette option ne respecte pas les règles de la démarche présentée</label>
+      </div>
+      <button class="validate-btn" onclick="val(3)">✔ Valider</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+    <div class="question-block" id="qb4">
+      <div class="question-label">Question 4 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Sur le plateau Vaucanson, le risque R3 (inhalation fumées de soudure) est coté <strong>P=4 et G=4</strong>. Quelle est sa criticité et dans quelle <strong>catégorie de priorité</strong> se classe-t-il ?</div>
+      <div class="context-box"><strong>Grille de criticité :</strong> C = 1 à 3 : Tolérable (T) | C = 4 à 6 : Modéré (M) | C = 7 à 12 : Inacceptable (I) | C ≥ 13 : Critique (CR) – action immédiate avant reprise</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q4" value="a"> Criticité = 8 – Inacceptable (I) : action corrective à planifier sous 3 mois (une réponse plausible à première vue mais qui ne convient pas ici)</label>
+        <label class="option-item"><input type="radio" name="q4" value="b"> Criticité = 12 – Inacceptable (I) : action corrective à planifier sous 1 mois — une approche qui s'écarte de la méthode étudiée en cours — ce n'est pas le bon critère à retenir dans ce contexte</label>
+        <label class="option-item"><input type="radio" name="q4" value="c"> Criticité = 16 – Critique (CR) : activité à suspendre immédiatement jusqu'à mise en place des mesures de prévention</label>
+        <label class="option-item"><input type="radio" name="q4" value="d"> Criticité = 16 – Inacceptable (I) : le risque est élevé mais ne nécessite pas de suspension immédiate (piste à écarter au vu des éléments du cas étudié)</label>
+      </div>
+      <button class="validate-btn" onclick="val(4)">✔ Valider</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+    <div class="question-block" id="qb5">
+      <div class="question-label">Question 5 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Parmi ces situations, laquelle constitue un <strong>danger</strong> au sens du DUER, et non pas un risque ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q5" value="a"> La probabilité qu'un opérateur trébuche et se blesse en marchant près des machines CNC — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+        <label class="option-item"><input type="radio" name="q5" value="b"> L'exposition répétée aux vibrations d'une meuleuse pouvant provoquer des troubles musculosquelettiques à long terme — ce n'est pas le bon critère à retenir dans ce contexte</label>
+        <label class="option-item"><input type="radio" name="q5" value="c"> La fatigue accumulée par les opérateurs travaillant debout plus de 6 heures consécutives (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q5" value="d"> Le câble électrique dénudé du poste à souder (source intrinsèque de dommage, indépendamment de toute exposition)</label>
+      </div>
+      <button class="validate-btn" onclick="val(5)">✔ Valider</button>
+      <div class="feedback" id="fb5"></div>
+    </div>
+    <div class="question-block" id="qb6">
+      <div class="question-label">Question 6 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Quelles sont les <strong>sanctions</strong> en cas d'absence ou de non mise à jour du DUER ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q6" value="a"> Amende de 1 500 € (3 000 € en récidive) pour défaut de transcription. Responsabilité pénale de l'employeur engagée en cas d'accident grave</label>
+        <label class="option-item"><input type="radio" name="q6" value="b"> Aucune sanction, le DUER est une démarche volontaire — une piste qui n'apporte pas de réponse complète à la question posée — ce n'est pas le bon critère à retenir dans ce contexte</label>
+        <label class="option-item"><input type="radio" name="q6" value="c"> Fermeture immédiate de l'entreprise (option séduisante en apparence mais erronée sur le fond) — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q6" value="d"> Sanctions uniquement si un accident survient — ce choix ne correspond pas à la méthode ou à la définition attendue ici (une solution qui ne traite pas la cause réelle du problème)</label>
+      </div>
+      <button class="validate-btn" onclick="val(6)">✔ Valider</button>
+      <div class="feedback" id="fb6"></div>
+    </div>
+    <div class="question-block" id="qb7">
+      <div class="question-label">Question 7 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Le DUER doit être <strong>accessible</strong> aux personnes suivantes :</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q7" value="a"> Uniquement à la direction et au comité de direction — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème (approximation qui ne correspond pas à la réalité du terrain)</label>
+        <label class="option-item"><input type="radio" name="q7" value="b"> Tous les salariés, les représentants du personnel (CSE/CHSCT), l'inspection du travail, le médecin du travail, les services de prévention (CARSAT/CRAMIF)</label>
+        <label class="option-item"><input type="radio" name="q7" value="c"> Uniquement à l'inspection du travail si elle en fait la demande (une solution qui ne traite pas la cause réelle du problème) — une piste qui n'apporte pas de réponse complète à la question posée</label>
+        <label class="option-item"><input type="radio" name="q7" value="d"> Uniquement aux personnes habilitées sécurité par la direction (une réponse plausible à première vue mais qui ne convient pas ici) (confusion fréquente qu'il convient d'éviter)</label>
+      </div>
+      <button class="validate-btn" onclick="val(7)">✔ Valider</button>
+      <div class="feedback" id="fb7"></div>
+    </div>
+    <div class="question-block" id="qb8">
+      <div class="question-label">Question 8 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">La grille de cotation du DUER fonctionne sur le principe <strong>P × G</strong>. Quelles propositions sont vraies ? (Cochez les 3 vraies)</div>
+      <div class="options-list">
+        <label class="option-item"><input type="checkbox" name="q8" value="a"> P (Probabilité) varie de 1 (rare) à 4 (très probable)</label>
+        <label class="option-item"><input type="checkbox" name="q8" value="b"> G (Gravité) varie de 1 (sans arrêt de travail) à 4 (décès/invalidité)</label>
+        <label class="option-item"><input type="checkbox" name="q8" value="c"> Tous les risques de criticité < 4 sont à supprimer en priorité</label>
+        <label class="option-item"><input type="checkbox" name="q8" value="d"> Plus la criticité est élevée, plus la priorité d'action est forte</label>
+        <label class="option-item"><input type="checkbox" name="q8" value="e"> La grille fonctionne uniquement de 1 à 100 selon les bénéfices financiers</label>
+      </div>
+      <button class="validate-btn" onclick="val(8)">✔ Valider</button>
+      <div class="feedback" id="fb8"></div>
+    </div>
+    <div class="question-block" id="qb9">
+      <div class="question-label">Question 9 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Le Code du travail (L4121-2) fixe <strong>9 principes généraux de prévention</strong>. Quel est le 1er ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q9" value="a"> Donner les EPI aux salariés (piste à écarter au vu des éléments du cas étudié) — un choix qui ne règle pas durablement la situation observée</label>
+        <label class="option-item"><input type="radio" name="q9" value="b"> Éviter les risques – c'est-à-dire supprimer le danger à la source quand c'est possible</label>
+        <label class="option-item"><input type="radio" name="q9" value="c"> Former le personnel à la prévention (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q9" value="d"> Documenter les risques dans le DUER (confusion fréquente qu'il convient d'éviter)</label>
+      </div>
+      <button class="validate-btn" onclick="val(9)">✔ Valider</button>
+      <div class="feedback" id="fb9"></div>
+    </div>
+    <div class="question-block" id="qb10">
+      <div class="question-label">Question 10 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">En matière de prévention, quelle est la <strong>hiérarchie</strong> à respecter (du plus efficace au moins efficace) ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q10" value="a"> EPI individuels > Protections collectives > Substitution > Suppression du danger (approximation qui ne correspond pas à la réalité du terrain)</label>
+        <label class="option-item"><input type="radio" name="q10" value="b"> Tous au même niveau — une piste qui n'apporte pas de réponse complète à la question posée (confusion fréquente qu'il convient d'éviter)</label>
+        <label class="option-item"><input type="radio" name="q10" value="c"> Formation > EPI > Substitution > Suppression (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q10" value="d"> Suppression du danger > Substitution > Protections collectives > EPI individuels (Equipements de Protection Individuelle)</label>
+      </div>
+      <button class="validate-btn" onclick="val(10)">✔ Valider</button>
+      <div class="feedback" id="fb10"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section-block">
+  <div class="section-header s2">
+    <div class="section-number">🎯</div>
+    <div class="section-title-block">
+      <h2>Partie 2 – Cotation P×G et hiérarchisation</h2>
+      <p>Méthode appliquée au plateau Vaucanson | Q11 à Q18</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="info-box">
+      <strong>📊 Rappel cotation :</strong> Criticité <strong>C = P × G</strong>. P (Probabilité) varie de 1 (rare) à 4 (très probable). G (Gravité) varie de 1 (sans arrêt) à 4 (décès/invalidité). Catégories : <strong>T</strong>olérable (C 1-3) | <strong>M</strong>odéré (C 4-6) | <strong>I</strong>nacceptable (C 7-12) | <strong>CR</strong>itique (C ≥ 13).
+    </div>
+    <div class="question-block" id="qb11">
+      <div class="question-label">Question 11 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Calculez la <strong>criticité</strong> du risque R2 (sol glissant à cause de copeaux et d'huile) coté P=3 et G=2.</div>
+      <div class="context-box"><strong>Formule :</strong> C = P × G</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num11" placeholder="?">
+        <span class="unit-label">criticité C</span>
+      </div>
+      <button class="validate-btn" onclick="val(11)">✔ Valider</button>
+      <div class="feedback" id="fb11"></div>
+    </div>
+    <div class="question-block" id="qb12">
+      <div class="question-label">Question 12 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Parmi les 8 risques R1-R8 du plateau Vaucanson, lequel a la <strong>criticité la plus élevée</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q12" value="a"> R1 (Projections de copeaux chauds, C=9)</label>
+        <label class="option-item"><input type="radio" name="q12" value="b"> R5 (Brûlures projection métal fondu, C=9) (approximation qui ne correspond pas à la réalité du terrain)</label>
+        <label class="option-item"><input type="radio" name="q12" value="c"> R8 (Bruit excessif CNC, C=8) (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q12" value="d"> R3 (Inhalation fumées de soudure, C=16)</label>
+      </div>
+      <button class="validate-btn" onclick="val(12)">✔ Valider</button>
+      <div class="feedback" id="fb12"></div>
+    </div>
+    <div class="question-block" id="qb13">
+      <div class="question-label">Question 13 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Pour hiérarchiser les risques, le DUER les classe par <strong>ordre de priorité d'action</strong>. Quelle logique applique-t-on ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q13" value="a"> De l'ordre alphabétique du nom du risque (ce choix n'a qu'un effet limité sur le résultat recherché) (confusion fréquente qu'il convient d'éviter)</label>
+        <label class="option-item"><input type="radio" name="q13" value="b"> Par ordre chronologique d'apparition dans l'entreprise — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q13" value="c"> Par coût des actions correctives nécessaires — une piste qui n'apporte pas de réponse complète à la question posée — une approche qui s'écarte de la méthode étudiée en cours</label>
+        <label class="option-item"><input type="radio" name="q13" value="d"> Du plus critique au moins critique (C décroissante). Les risques critiques (CR) et inacceptables (I) sont traités en priorité</label>
+      </div>
+      <button class="validate-btn" onclick="val(13)">✔ Valider</button>
+      <div class="feedback" id="fb13"></div>
+    </div>
+    <div class="question-block" id="qb14">
+      <div class="question-label">Question 14 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Pour réduire le risque R3 (inhalation fumées de soudure, C=16), quelles <strong>mesures</strong> sont à prévoir ? (Cochez les 3 mesures pertinentes)</div>
+      <div class="options-list">
+        <label class="option-item"><input type="checkbox" name="q14" value="a"> Installer un système d'aspiration des fumées à la source</label>
+        <label class="option-item"><input type="checkbox" name="q14" value="b"> Mettre à disposition un masque respiratoire ARI adapté (équipement de protection individuelle)</label>
+        <label class="option-item"><input type="checkbox" name="q14" value="c"> Demander à l'opérateur de retenir sa respiration pendant la soudure</label>
+        <label class="option-item"><input type="checkbox" name="q14" value="d"> Former le personnel aux bonnes pratiques de soudure ventilée</label>
+        <label class="option-item"><input type="checkbox" name="q14" value="e"> Augmenter le salaire de l'opérateur pour compenser le risque</label>
+      </div>
+      <button class="validate-btn" onclick="val(14)">✔ Valider</button>
+      <div class="feedback" id="fb14"></div>
+    </div>
+    <div class="question-block" id="qb15">
+      <div class="question-label">Question 15 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Après installation de l'aspiration et port du masque, comment <strong>réévaluer</strong> R3 dans le DUER ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q15" value="a"> Le risque a disparu, on le supprime du DUER (confusion fréquente qu'il convient d'éviter) (option séduisante en apparence mais erronée sur le fond)</label>
+        <label class="option-item"><input type="radio" name="q15" value="b"> On garde la même cotation, les mesures n'ont aucun effet (une solution qui ne traite pas la cause réelle du problème) — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q15" value="c"> On recote en gardant la trace de l'évolution : nouvelle P (réduite par les mesures) × nouvelle G (gravité potentielle inchangée) = nouvelle criticité résiduelle</label>
+        <label class="option-item"><input type="radio" name="q15" value="d"> On ne réévalue jamais les risques — une approche qui s'écarte de la méthode étudiée en cours — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+      </div>
+      <button class="validate-btn" onclick="val(15)">✔ Valider</button>
+      <div class="feedback" id="fb15"></div>
+    </div>
+    <div class="question-block" id="qb16">
+      <div class="question-label">Question 16 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Pour le risque R7 (étagères surchargées pouvant basculer, P=2, G=4), pourquoi <strong>G=4</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q16" value="a"> Parce que les étagères sont nombreuses (confusion fréquente qu'il convient d'éviter) — une approche qui s'écarte de la méthode étudiée en cours</label>
+        <label class="option-item"><input type="radio" name="q16" value="b"> Parce que les étagères coûtent cher — un choix qui ne règle pas durablement la situation observée (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q16" value="c"> Parce que c'est calculé automatiquement par le logiciel (une réponse plausible à première vue mais qui ne convient pas ici)</label>
+        <label class="option-item"><input type="radio" name="q16" value="d"> Parce qu'une étagère qui bascule sur une personne peut causer une blessure très grave voire un décès (G=4 = gravité maximale)</label>
+      </div>
+      <button class="validate-btn" onclick="val(16)">✔ Valider</button>
+      <div class="feedback" id="fb16"></div>
+    </div>
+    <div class="question-block" id="qb17">
+      <div class="question-label">Question 17 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Calculez la <strong>criticité moyenne</strong> des 8 risques du plateau Vaucanson (C1=9, C2=6, C3=16, C4=8, C5=9, C6=6, C7=8, C8=8).</div>
+      <div class="context-box"><strong>Méthode :</strong> Cmoy = (9+6+16+8+9+6+8+8) / 8 = 70/8 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num17" step="0.1" placeholder="?">
+        <span class="unit-label">criticité moyenne</span>
+      </div>
+      <button class="validate-btn" onclick="val(17)">✔ Valider</button>
+      <div class="feedback" id="fb17"></div>
+    </div>
+    <div class="question-block" id="qb18">
+      <div class="question-label">Question 18 <span class="competence-tag">Cotation</span></div>
+      <div class="question-text">Combien de risques sont en catégorie <strong>Critique (CR, C≥13)</strong> sur le plateau Vaucanson ? (Voir grille de cotation)</div>
+      <div class="context-box"><strong>Méthode :</strong> Compter les risques dont C ≥ 13 dans la liste (C1=9, C2=6, C3=16, C4=8, C5=9, C6=6, C7=8, C8=8)</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num18" placeholder="?">
+        <span class="unit-label">risques CR (C≥13)</span>
+      </div>
+      <button class="validate-btn" onclick="val(18)">✔ Valider</button>
+      <div class="feedback" id="fb18"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section-block">
+  <div class="section-header s3">
+    <div class="section-number">🛡️</div>
+    <div class="section-title-block">
+      <h2>Partie 3 – Plan d'action de prévention</h2>
+      <p>Mesures collectives, EPI, formation | Q19 à Q28</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="info-box">
+      <strong>🛡️ Rappel hiérarchie prévention (L4121-2) :</strong> 1) <strong>Éviter</strong> le risque (supprimer le danger). 2) <strong>Substituer</strong> par un procédé moins dangereux. 3) Protections <strong>collectives</strong> (priorité). 4) <strong>EPI</strong> individuels (dernier recours).
+    </div>
+    <div class="question-block" id="qb19">
+      <div class="question-label">Question 19 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Compte-tenu de la hiérarchisation des risques, quelle est la <strong>première action</strong> à mettre en place sur le plateau ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q19" value="a"> Suspendre l'activité de soudure (R3, C=16) et installer l'aspiration de fumées + fournir les masques avant reprise</label>
+        <label class="option-item"><input type="radio" name="q19" value="b"> Installer une fontaine à eau pour les opérateurs — une approche qui s'écarte de la méthode étudiée en cours</label>
+        <label class="option-item"><input type="radio" name="q19" value="c"> Repeindre tous les murs de l'atelier pour améliorer la luminosité — un choix qui ne règle pas durablement la situation observée</label>
+        <label class="option-item"><input type="radio" name="q19" value="d"> Augmenter le bonus de fin d'année des opérateurs — cette proposition reste partielle et ne couvre pas correctement la situation (une solution qui ne traite pas la cause réelle du problème)</label>
+      </div>
+      <button class="validate-btn" onclick="val(19)">✔ Valider</button>
+      <div class="feedback" id="fb19"></div>
+    </div>
+    <div class="question-block" id="qb20">
+      <div class="question-label">Question 20 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Un <strong>plan d'action DUER</strong> doit comporter pour chaque mesure :</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q20" value="a"> Uniquement la description de l'action — cette option ne respecte pas les règles de la démarche présentée — un choix qui ne règle pas durablement la situation observée</label>
+        <label class="option-item"><input type="radio" name="q20" value="b"> Uniquement le nom de la personne responsable (confusion fréquente qu'il convient d'éviter) (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q20" value="c"> Description, responsable (qui), date prévue (quand), budget estimé, indicateur de suivi (% de réalisation), date de réévaluation</label>
+        <label class="option-item"><input type="radio" name="q20" value="d"> Le numéro de page du DUER où il figure — cette proposition reste partielle et ne couvre pas correctement la situation — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+      </div>
+      <button class="validate-btn" onclick="val(20)">✔ Valider</button>
+      <div class="feedback" id="fb20"></div>
+    </div>
+    <div class="question-block" id="qb21">
+      <div class="question-label">Question 21 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Pour le risque R5 (brûlures par projection métal fondu), quels <strong>EPI</strong> sont obligatoires ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q21" value="a"> Lunettes de soleil et casquette — un choix qui ne règle pas durablement la situation observée — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+        <label class="option-item"><input type="radio" name="q21" value="b"> Tablier en cuir ou matière ininflammable + gants de soudure + masque/cagoule de protection + chaussures de sécurité</label>
+        <label class="option-item"><input type="radio" name="q21" value="c"> Gilet jaune réfléchissant uniquement (confusion fréquente qu'il convient d'éviter) (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q21" value="d"> Combinaison en coton fin (piste à écarter au vu des éléments du cas étudié) (une solution qui ne traite pas la cause réelle du problème)</label>
+      </div>
+      <button class="validate-btn" onclick="val(21)">✔ Valider</button>
+      <div class="feedback" id="fb21"></div>
+    </div>
+    <div class="question-block" id="qb22">
+      <div class="question-label">Question 22 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Pour réduire le risque R8 (bruit 87 dB sans protection), quelle <strong>mesure collective</strong> est prioritaire ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q22" value="a"> Imposer le port de bouchons d'oreilles à tous les salariés (option séduisante en apparence mais erronée sur le fond) — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q22" value="b"> Demander aux salariés de moins parler — une approche qui s'écarte de la méthode étudiée en cours — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q22" value="c"> Encoffrer les machines CNC bruyantes ou installer des panneaux acoustiques pour absorber le bruit à la source. Solution collective AVANT solution individuelle (EPI)</label>
+        <label class="option-item"><input type="radio" name="q22" value="d"> Distribuer des chewing-gums pour relâcher les tensions — une piste qui n'apporte pas de réponse complète à la question posée (piste à écarter au vu des éléments du cas étudié)</label>
+      </div>
+      <button class="validate-btn" onclick="val(22)">✔ Valider</button>
+      <div class="feedback" id="fb22"></div>
+    </div>
+    <div class="question-block" id="qb23">
+      <div class="question-label">Question 23 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Le bruit mesuré est à <strong>87 dB</strong> sur les CNC. Quel est le seuil réglementaire à partir duquel les actions de prévention sont obligatoires ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q23" value="a"> 80 dB (valeur d'exposition inférieure, EU 2003/10/CE) déclenche la mise à disposition d'EPI + information. 85 dB déclenche le port obligatoire et le contrôle médical. 87 dB = SEUIL LIMITE à ne jamais dépasser</label>
+        <label class="option-item"><input type="radio" name="q23" value="b"> 60 dB — un choix qui ne règle pas durablement la situation observée (confusion fréquente qu'il convient d'éviter) (piste à écarter au vu des éléments du cas étudié) (confusion fréquente qu'il convient d'éviter) — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q23" value="c"> 100 dB — ce n'est pas le bon critère à retenir dans ce contexte (une solution qui ne traite pas la cause réelle du problème) (une solution qui ne traite pas la cause réelle du problème) — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+        <label class="option-item"><input type="radio" name="q23" value="d"> 120 dB — cette proposition reste partielle et ne couvre pas correctement la situation — une approche qui s'écarte de la méthode étudiée en cours — une piste qui n'apporte pas de réponse complète à la question posée — cette option ne respecte pas les règles de la démarche présentée</label>
+      </div>
+      <button class="validate-btn" onclick="val(23)">✔ Valider</button>
+      <div class="feedback" id="fb23"></div>
+    </div>
+    <div class="question-block" id="qb24">
+      <div class="question-label">Question 24 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Si l'installation d'aspiration de fumées pour R3 coûte <strong>4 500 €</strong> et que les masques ARI coûtent <strong>800 €</strong> (10 masques × 80 €), quel est le <strong>budget total</strong> pour traiter R3 ?</div>
+      <div class="context-box"><strong>Méthode :</strong> Budget = 4 500 + 800 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num24" placeholder="?">
+        <span class="unit-label">€ budget mesures</span>
+      </div>
+      <button class="validate-btn" onclick="val(24)">✔ Valider</button>
+      <div class="feedback" id="fb24"></div>
+    </div>
+    <div class="question-block" id="qb25">
+      <div class="question-label">Question 25 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Pour R2 (sol glissant copeaux + huile, C=6), quelle <strong>combinaison d'actions</strong> est la plus efficace ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q25" value="a"> Demander aux opérateurs de marcher plus prudemment (une solution qui ne traite pas la cause réelle du problème) — ce choix ne correspond pas à la méthode ou à la définition attendue ici</label>
+        <label class="option-item"><input type="radio" name="q25" value="b"> Procédure de nettoyage régulier (chaque 2h) + bac à copeaux à proximité + signalétique sol glissant + chaussures de sécurité antidérapantes (EPI)</label>
+        <label class="option-item"><input type="radio" name="q25" value="c"> Mettre du sable sur le sol — cette option ne respecte pas les règles de la démarche présentée — ce n'est pas le bon critère à retenir dans ce contexte</label>
+        <label class="option-item"><input type="radio" name="q25" value="d"> Interdire l'accès à l'atelier — un choix qui ne règle pas durablement la situation observée (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+      </div>
+      <button class="validate-btn" onclick="val(25)">✔ Valider</button>
+      <div class="feedback" id="fb25"></div>
+    </div>
+    <div class="question-block" id="qb26">
+      <div class="question-label">Question 26 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Pour R4 (câble dénudé du poste à souder, C=8), quelle est la mesure <strong>immédiate</strong> et la mesure <strong>préventive</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q26" value="a"> Mettre du scotch sur le câble et continuer à souder normalement (confusion fréquente qu'il convient d'éviter) — ce choix ne correspond pas à la méthode ou à la définition attendue ici (ce choix n'a qu'un effet limité sur le résultat recherché) — une piste qui n'apporte pas de réponse complète à la question posée</label>
+        <label class="option-item"><input type="radio" name="q26" value="b"> Immédiate : isoler / consigner le poste défectueux, faire intervenir un électricien habilité. Préventive : programme de vérification périodique des équipements électriques (annuelle obligatoire, décret 88-1056)</label>
+        <label class="option-item"><input type="radio" name="q26" value="c"> Acheter un nouveau poste à souder sans vérification — un choix qui ne règle pas durablement la situation observée — cette option ne respecte pas les règles de la démarche présentée (raisonnement incomplet qui ignore une partie des données du cas)</label>
+        <label class="option-item"><input type="radio" name="q26" value="d"> Demander à l'opérateur d'isoler lui-même le câble avec ses gants — une piste qui n'apporte pas de réponse complète à la question posée (option séduisante en apparence mais erronée sur le fond) (piste à écarter au vu des éléments du cas étudié) — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+      </div>
+      <button class="validate-btn" onclick="val(26)">✔ Valider</button>
+      <div class="feedback" id="fb26"></div>
+    </div>
+    <div class="question-block" id="qb27">
+      <div class="question-label">Question 27 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">La <strong>formation à la sécurité</strong> est une mesure clé du DUER. Quels publics doivent être formés ? (Cochez les 3 vraies)</div>
+      <div class="options-list">
+        <label class="option-item"><input type="checkbox" name="q27" value="a"> Tout nouveau salarié (formation à l'embauche)</label>
+        <label class="option-item"><input type="checkbox" name="q27" value="b"> Salarié changeant de poste ou de technique</label>
+        <label class="option-item"><input type="checkbox" name="q27" value="c"> Uniquement les chefs d'équipe et la direction</label>
+        <label class="option-item"><input type="checkbox" name="q27" value="d"> Salariés temporaires et intérimaires aussi</label>
+        <label class="option-item"><input type="checkbox" name="q27" value="e"> Aucun, la formation est facultative</label>
+      </div>
+      <button class="validate-btn" onclick="val(27)">✔ Valider</button>
+      <div class="feedback" id="fb27"></div>
+    </div>
+    <div class="question-block" id="qb28">
+      <div class="question-label">Question 28 <span class="competence-tag">Plan action</span></div>
+      <div class="question-text">Quels sont les <strong>acteurs internes</strong> de la prévention dans une entreprise ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q28" value="a"> Employeur (responsable), salariés (acteurs), CSE/CHSCT (consultatif), animateur sécurité (HSE), médecin du travail, services prévention CARSAT (externe)</label>
+        <label class="option-item"><input type="radio" name="q28" value="b"> Uniquement l'employeur — un choix qui ne règle pas durablement la situation observée — ce choix ne correspond pas à la méthode ou à la définition attendue ici</label>
+        <label class="option-item"><input type="radio" name="q28" value="c"> Uniquement les délégués syndicaux — ce n'est pas le bon critère à retenir dans ce contexte (confusion fréquente qu'il convient d'éviter)</label>
+        <label class="option-item"><input type="radio" name="q28" value="d"> Uniquement les visiteurs extérieurs (option séduisante en apparence mais erronée sur le fond) — une approche qui s'écarte de la méthode étudiée en cours</label>
+      </div>
+      <button class="validate-btn" onclick="val(28)">✔ Valider</button>
+      <div class="feedback" id="fb28"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section-block">
+  <div class="section-header s4">
+    <div class="section-number">🥽</div>
+    <div class="section-title-block">
+      <h2>Partie 4 – EPI, pictogrammes &amp; indicateurs</h2>
+      <p>Choix, suivi et statistiques | Q29 à Q35</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="info-box">
+      <strong>🥽 Rappel EPI :</strong> 3 catégories selon règlement UE 2016/425 : <strong>I</strong> (risques mineurs), <strong>II</strong> (risques moyens), <strong>III</strong> (risques graves/mortels). Fournis gratuitement par l'employeur, entretenus, renouvelés. Cat III = vérification annuelle obligatoire. Le port est obligatoire (refus = faute).
+    </div>
+    <div class="question-block" id="qb29">
+      <div class="question-label">Question 29 <span class="competence-tag">EPI</span></div>
+      <div class="question-text">Les EPI sont classés en <strong>3 catégories</strong> selon le risque. Comment ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q29" value="a"> Cat A, B, C selon le confort (piste à écarter au vu des éléments du cas étudié) — ce choix ne correspond pas à la méthode ou à la définition attendue ici (piste à écarter au vu des éléments du cas étudié) (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q29" value="b"> Cat I (risques mineurs ex: lunettes soleil), Cat II (risques moyens ex: casque chantier), Cat III (risques graves/mortels ex: harnais antichute, masques respiratoires)</label>
+        <label class="option-item"><input type="radio" name="q29" value="c"> Cat 1, 2, 3 selon le prix (option séduisante en apparence mais erronée sur le fond) (ce choix n'a qu'un effet limité sur le résultat recherché) (approximation qui ne correspond pas à la réalité du terrain)</label>
+        <label class="option-item"><input type="radio" name="q29" value="d"> Aucune catégorie n'existe (une solution qui ne traite pas la cause réelle du problème) (confusion fréquente qu'il convient d'éviter) (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+      </div>
+      <button class="validate-btn" onclick="val(29)">✔ Valider</button>
+      <div class="feedback" id="fb29"></div>
+    </div>
+    <div class="question-block" id="qb30">
+      <div class="question-label">Question 30 <span class="competence-tag">EPI</span></div>
+      <div class="question-text">Pour choisir un EPI, quels <strong>critères</strong> faut-il respecter ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q30" value="a"> Adapté au risque identifié + marquage CE + norme EN appropriée + adapté à la morphologie + accepté par le salarié (sinon non porté)</label>
+        <label class="option-item"><input type="radio" name="q30" value="b"> Le moins cher est toujours le meilleur (option séduisante en apparence mais erronée sur le fond) (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q30" value="c"> Le plus joli visuellement (confusion fréquente qu'il convient d'éviter) (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q30" value="d"> Choisi exclusivement par la direction — ce n'est pas le bon critère à retenir dans ce contexte — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+      </div>
+      <button class="validate-btn" onclick="val(30)">✔ Valider</button>
+      <div class="feedback" id="fb30"></div>
+    </div>
+    <div class="question-block" id="qb31">
+      <div class="question-label">Question 31 <span class="competence-tag">EPI</span></div>
+      <div class="question-text">L'employeur a l'obligation de :</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q31" value="a"> Donner les EPI une fois, ensuite c'est le salarié qui rachète — cette proposition reste partielle et ne couvre pas correctement la situation — ce choix ne correspond pas à la méthode ou à la définition attendue ici</label>
+        <label class="option-item"><input type="radio" name="q31" value="b"> Demander au salarié d'apporter ses propres EPI — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q31" value="c"> Fournir gratuitement les EPI nécessaires, les entretenir/nettoyer/renouveler (durée de vie respectée), former les salariés à leur utilisation, vérifier annuellement les EPI Cat III</label>
+        <label class="option-item"><input type="radio" name="q31" value="d"> Aucune obligation, c'est au salarié de se protéger (une réponse plausible à première vue mais qui ne convient pas ici) (confusion fréquente qu'il convient d'éviter)</label>
+      </div>
+      <button class="validate-btn" onclick="val(31)">✔ Valider</button>
+      <div class="feedback" id="fb31"></div>
+    </div>
+    <div class="question-block" id="qb32">
+      <div class="question-label">Question 32 <span class="competence-tag">EPI</span></div>
+      <div class="question-text">Que se passe-t-il si un salarié <strong>refuse</strong> de porter ses EPI ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q32" value="a"> Rien, c'est son choix personnel — une approche qui s'écarte de la méthode étudiée en cours — ce choix ne correspond pas à la méthode ou à la définition attendue ici — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème (option séduisante en apparence mais erronée sur le fond)</label>
+        <label class="option-item"><input type="radio" name="q32" value="b"> Le refus de porter ses EPI est une faute pouvant entraîner une sanction disciplinaire (avertissement, mise à pied, voire licenciement). L'employeur a aussi obligation de faire respecter le port (sinon engage sa responsabilité)</label>
+        <label class="option-item"><input type="radio" name="q32" value="c"> Le salarié reçoit une prime pour son courage (une réponse plausible à première vue mais qui ne convient pas ici) (approximation qui ne correspond pas à la réalité du terrain) (raisonnement incomplet qui ignore une partie des données du cas) — une piste qui n'apporte pas de réponse complète à la question posée</label>
+        <label class="option-item"><input type="radio" name="q32" value="d"> Aucune conséquence légale — un choix qui ne règle pas durablement la situation observée — une piste qui n'apporte pas de réponse complète à la question posée (confusion fréquente qu'il convient d'éviter) — une lecture rapide qui passe à côté du critère essentiel</label>
+      </div>
+      <button class="validate-btn" onclick="val(32)">✔ Valider</button>
+      <div class="feedback" id="fb32"></div>
+    </div>
+    <div class="question-block" id="qb33">
+      <div class="question-label">Question 33 <span class="competence-tag">EPI</span></div>
+      <div class="question-text">Quel <strong>indicateur</strong> permet de suivre l'efficacité de la prévention ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q33" value="a"> Taux de fréquence (TF) des accidents (nb AT × 1 000 000 / nb heures travaillées), taux de gravité (TG), nombre de presqu'accidents déclarés, jours sans accident</label>
+        <label class="option-item"><input type="radio" name="q33" value="b"> Le chiffre d'affaires de l'entreprise (piste à écarter au vu des éléments du cas étudié) (une solution qui ne traite pas la cause réelle du problème) (raisonnement incomplet qui ignore une partie des données du cas)</label>
+        <label class="option-item"><input type="radio" name="q33" value="c"> Le nombre de visiteurs — un choix qui ne règle pas durablement la situation observée (approximation qui ne correspond pas à la réalité du terrain) (piste à écarter au vu des éléments du cas étudié)</label>
+        <label class="option-item"><input type="radio" name="q33" value="d"> La satisfaction client — une approche qui s'écarte de la méthode étudiée en cours (une réponse plausible à première vue mais qui ne convient pas ici) — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+      </div>
+      <button class="validate-btn" onclick="val(33)">✔ Valider</button>
+      <div class="feedback" id="fb33"></div>
+    </div>
+    <div class="question-block" id="qb34">
+      <div class="question-label">Question 34 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Sur le plateau Vaucanson : <strong>2 accidents avec arrêt</strong> sur l'année + <strong>120 000 heures travaillées</strong>. Calculez le <strong>Taux de Fréquence</strong> (TF).</div>
+      <div class="context-box"><strong>Formule :</strong> TF = (Nb AT × 1 000 000) / Heures travaillées = (2 × 1 000 000) / 120 000 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num34" step="0.1" placeholder="?">
+        <span class="unit-label">TF (arrondir à 1 décimale)</span>
+      </div>
+      <button class="validate-btn" onclick="val(34)">✔ Valider</button>
+      <div class="feedback" id="fb34"></div>
+    </div>
+    <div class="question-block" id="qb35">
+      <div class="question-label">Question 35 <span class="competence-tag">EPI</span></div>
+      <div class="question-text">Sur les panneaux d'affichage, on trouve des <strong>pictogrammes EPI</strong>. Quels pictogrammes sont normalisés (ISO 7010) ? (Cochez les 3 vrais)</div>
+      <div class="options-list">
+        <label class="option-item"><input type="checkbox" name="q35" value="a"> Port du casque obligatoire (rond bleu, casque blanc)</label>
+        <label class="option-item"><input type="checkbox" name="q35" value="b"> Port des lunettes obligatoire (rond bleu, lunettes blanches)</label>
+        <label class="option-item"><input type="checkbox" name="q35" value="c"> Couleur préférée du chef d'atelier</label>
+        <label class="option-item"><input type="checkbox" name="q35" value="d"> Port des chaussures de sécurité obligatoire (rond bleu, chaussure blanche)</label>
+        <label class="option-item"><input type="checkbox" name="q35" value="e"> Salaire variable</label>
+      </div>
+      <button class="validate-btn" onclick="val(35)">✔ Valider</button>
+      <div class="feedback" id="fb35"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section-block">
+  <div class="section-header s5">
+    <div class="section-number">✍️</div>
+    <div class="section-title-block">
+      <h2>Partie 5 – Synthèse et plan d'action rédigé</h2>
+      <p>Culture prévention et bilan | Q36 à Q40</p>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="question-block" id="qb36">
+      <div class="question-label">Question 36 <span class="competence-tag">Synthèse</span></div>
+      <div class="question-text">Au-delà du document, le DUER vise à créer une <strong>culture de prévention</strong>. Comment ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q36" value="a"> Impliquer tous les salariés dans l'évaluation des risques, encourager la déclaration des presqu'accidents, valoriser les initiatives de prévention, faire vivre le document</label>
+        <label class="option-item"><input type="radio" name="q36" value="b"> Imposer des sanctions à tout salarié contrevenant — cette option ne respecte pas les règles de la démarche présentée — un choix qui ne règle pas durablement la situation observée</label>
+        <label class="option-item"><input type="radio" name="q36" value="c"> Faire un document de référence sans le partager (option séduisante en apparence mais erronée sur le fond) — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+        <label class="option-item"><input type="radio" name="q36" value="d"> Externaliser à un consultant unique sans implication interne — une piste qui n'apporte pas de réponse complète à la question posée (une solution qui ne traite pas la cause réelle du problème)</label>
+      </div>
+      <button class="validate-btn" onclick="val(36)">✔ Valider</button>
+      <div class="feedback" id="fb36"></div>
+    </div>
+    <div class="question-block" id="qb37">
+      <div class="question-label">Question 37 <span class="competence-tag">Synthèse</span></div>
+      <div class="question-text">Quel <strong>lien</strong> y a-t-il entre le DUER et le management visuel SQCDP ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q37" value="a"> Aucun lien — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème — ce n'est pas le bon critère à retenir dans ce contexte — cette hypothèse ne tient pas compte du contexte réel de la ligne de production</label>
+        <label class="option-item"><input type="radio" name="q37" value="b"> Le DUER remplace le SQCDP — un choix qui ne règle pas durablement la situation observée (approximation qui ne correspond pas à la réalité du terrain) — ce choix ne correspond pas à la méthode ou à la définition attendue ici (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q37" value="c"> Les risques DUER alimentent l'axe S (Sécurité) du SQCDP. Les presqu'accidents signalés en SQCDP font monter en niveau de risque dans le DUER (qui doit alors être révisé)</label>
+        <label class="option-item"><input type="radio" name="q37" value="d"> Le SQCDP remplace le DUER — une approche qui s'écarte de la méthode étudiée en cours — cette option ne respecte pas les règles de la démarche présentée — une approche qui s'écarte de la méthode étudiée en cours</label>
+      </div>
+      <button class="validate-btn" onclick="val(37)">✔ Valider</button>
+      <div class="feedback" id="fb37"></div>
+    </div>
+    <div class="question-block" id="qb38">
+      <div class="question-label">Question 38 <span class="competence-tag">Synthèse</span></div>
+      <div class="question-text">Quels sont les <strong>acteurs externes</strong> de la prévention en France ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q38" value="a"> Aucun — ce n'est pas le bon critère à retenir dans ce contexte (confusion fréquente qu'il convient d'éviter) — une piste qui n'apporte pas de réponse complète à la question posée</label>
+        <label class="option-item"><input type="radio" name="q38" value="b"> Uniquement la mairie (une solution qui ne traite pas la cause réelle du problème) (une réponse plausible à première vue mais qui ne convient pas ici) — une approche qui s'écarte de la méthode étudiée en cours</label>
+        <label class="option-item"><input type="radio" name="q38" value="c"> Inspection du Travail (contrôle), CARSAT/CRAMIF (conseil + statistiques), INRS (recherche, formation, documentation), OPPBTP (BTP), médecine du travail</label>
+        <label class="option-item"><input type="radio" name="q38" value="d"> Uniquement les pompiers — cette option ne respecte pas les règles de la démarche présentée (option séduisante en apparence mais erronée sur le fond) — une lecture rapide qui passe à côté du critère essentiel</label>
+      </div>
+      <button class="validate-btn" onclick="val(38)">✔ Valider</button>
+      <div class="feedback" id="fb38"></div>
+    </div>
+    <div class="question-block" id="qb39">
+      <div class="question-label">Question 39 <span class="competence-tag">Synthèse</span></div>
+      <div class="question-text">Le DUER peut désormais être <strong>numérique</strong>. Quels sont les avantages ? (Cochez les 3 réels)</div>
+      <div class="options-list">
+        <label class="option-item"><input type="checkbox" name="q39" value="a"> Mise à jour facile et rapide</label>
+        <label class="option-item"><input type="checkbox" name="q39" value="b"> Traçabilité des modifications et de l'historique</label>
+        <label class="option-item"><input type="checkbox" name="q39" value="c"> Suppression de l'obligation légale</label>
+        <label class="option-item"><input type="checkbox" name="q39" value="d"> Accessibilité partagée (salariés, n+1, services prévention)</label>
+        <label class="option-item"><input type="checkbox" name="q39" value="e"> Suppression de la responsabilité de l'employeur</label>
+      </div>
+      <button class="validate-btn" onclick="val(39)">✔ Valider</button>
+      <div class="feedback" id="fb39"></div>
+    </div>
+    <div class="question-block" id="qb40">
+      <div class="question-label">Question 40 <span class="competence-tag">Rapport rédigé</span></div>
+      <div class="question-text">Rédigez le <strong>plan d'action priorisé</strong> pour le plateau Vaucanson. Pour chacun des 3 risques principaux (R3, R1+R5, R2+R6), précisez : niveau de criticité, mesures prévues (collectives + individuelles), responsable, délai, budget estimé.</div>
+      <div class="info-box" style="margin-bottom:12px;"><strong>📝 Attendu :</strong> 8-12 lignes structurées. Priorisation par criticité (R3 d'abord), distinction collectif/individuel, responsabilité claire, délais réalistes. Mention des EPI et de la formation.</div>
+      <textarea class="text-input" id="a40" style="min-height:200px;" placeholder="Plan d'action DUER – Plateau Vaucanson&#10;Date : ... | Responsable : Animateur HSE&#10;&#10;PRIORITÉ 1 – R3 (Fumées soudure, C=16, CR)&#10;Mesures : aspiration centralisée à la source + masques ARI (cat. III) + formation soudure ventilée&#10;Resp. : direction technique. Délai : 15 jours (suspension activité jusque-là). Budget : ~5 300 €&#10;&#10;PRIORITÉ 2 – R1 + R5 (Projections copeaux/métal, C=9 + 9, I)&#10;Mesures : écrans de protection CNC + tabliers cuir + gants soudure + cagoules + formation&#10;Resp. : chef d'équipe atelier. Délai : 1 mois. Budget : ~1 200 €&#10;&#10;PRIORITÉ 3 – R7 (Étagères, C=8, I) + R4 (câble dénudé, C=8, I)&#10;Mesures : audit + fixation + limitation charge + vérif électrique annuelle (décret 88-1056)&#10;Resp. : maintenance. Délai : 1 mois. Budget : ~600 €&#10;&#10;PRIORITÉ 4 – R2 + R6 + R8 (Sol glissant, manutention, bruit, C=6-8)&#10;Mesures : procédure nettoyage 2h + bacs copeaux + signalétique + EPI antidérapants + encoffrement CNC + bouchons + formation gestes&#10;Resp. : chef d'équipe + HSE. Délai : 2 mois. Budget : ~3 500 €&#10;&#10;Suivi : réévaluation criticité après chaque mesure + MAJ DUER + animation SQCDP quotidienne (axe S).&#10;Total budget : ~10 600 € | Date prochaine révision DUER : 6 mois."></textarea>
+      <button class="validate-btn" onclick="val(40)">✔ Valider mon plan d'action</button>
+      <div class="feedback" id="fb40"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="voir-note-btn" id="voir-note-wrap">
+  <button onclick="showFinal()">📊 Voir mon évaluation par compétences</button>
+</div>
+
+<div class="final-section" id="final-section" style="display:none;">
+  <h2>🎓 Récapitulatif du TP – DUER & Prévention</h2>
+  <p style="color:#555;font-size:.93rem;">Évaluation par compétences :</p>
+  <div class="final-note" id="final-note">– / 40</div>
+  <p style="font-size:.86rem;color:#777;margin-bottom:10px;">Résultats par compétence :</p>
+  <div class="comp-summary" id="comp-summary"></div>
+  <div style="background:var(--du-clair);border-radius:10px;padding:16px 20px;margin:18px 0;text-align:left;font-size:.88rem;line-height:1.8;">
+    <strong style="color:var(--du);">📌 Comment envoyer votre copie en 2 étapes :</strong><br>
+    <b>Étape 1 —</b> Cliquez sur <em>« 📄 Télécharger ma correction en PDF »</em>.<br>
+    <b>Étape 2 —</b> Sélectionnez votre classe et cliquez sur <em>« 📤 Envoyer au professeur »</em>.
+  </div>
+  <div style="margin:10px 0;">
+    <label style="font-size:.88rem;font-weight:700;color:var(--gris);display:block;margin-bottom:6px;">Confirmez votre classe :</label>
+    <select id="classe-envoi" style="padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.95rem;font-family:'Barlow',sans-serif;background:#fff;">
+      <option value="">-- Sélectionnez --</option>
+      <option>2PMIA1</option><option>2PMIA2</option><option>2PMIA3</option>
+      <option>2PMIA4</option><option>2PMIA5</option><option>1PLP</option>
+      <option>TPLP</option><option>1CIP G1</option><option>1CIP G2</option>
+      <option>2CIP G1</option><option>2CIP G2</option><option>GRETA</option>
+    </select>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+    <button class="send-btn pdf-btn" onclick="lancerPDF()">📄 Télécharger ma correction en PDF</button>
+    <button class="send-btn" onclick="envoyerNC()">📤 Envoyer au professeur</button>
+  </div>
+  <div id="send-status"></div>
+</div>
+
+</div><!-- /tp-content -->
+</div><!-- /container -->
+
+<script>
+var tpUnlocked=false;
+function checkVideo(){
+  var boxes=document.querySelectorAll('.vcheck');
+  var all=true;boxes.forEach(function(b){if(!b.checked)all=false;});
+  var btn=document.getElementById('video-start-btn');
+  btn.disabled=!all;
+  btn.innerHTML=all?'🚀 Démarrer le TP – DUER & Prévention':'🔒 Cochez tous les points clés pour débloquer le TP';
+}
+function deverrouillerTP(){
+  var ok=true;
+  ['nom','prenom','classe'].forEach(function(f){
+    var el=document.getElementById('eleve-'+f);
+    var hint=document.getElementById('hint-'+f);
+    if(!el.value.trim()){el.classList.add('field-error');hint.classList.add('show');ok=false;}
+    else{el.classList.remove('field-error');hint.classList.remove('show');}
+  });
+  if(!ok){document.getElementById('eleve-nom').scrollIntoView({behavior:'smooth',block:'center'});return;}
+  tpUnlocked=true;
+  var content=document.getElementById('tp-content');
+  content.style.pointerEvents='auto';content.style.opacity='1';content.style.userSelect='auto';content.style.filter='none';
+  timerPaused=false;timerEl.style.opacity='1';pauseBtn.textContent='⏸';pauseBtn.style.background='rgba(255,255,255,.25)';
+  var btn=document.getElementById('video-start-btn');
+  btn.innerHTML='✅ TP débloqué – Bonne chance !';btn.disabled=true;btn.style.background='#6c757d';
+  setTimeout(function(){content.scrollIntoView({behavior:'smooth',block:'start'});},300);
+}
+
+var DUREE=120*60,secondes=DUREE,timerPaused=true;
+var timerEl=document.getElementById('timer');
+timerEl.style.opacity='0.5';
+var pauseBtn=document.getElementById('pause-btn');
+pauseBtn.textContent='▶';pauseBtn.style.background='rgba(255,204,0,.4)';
+setInterval(function(){
+  if(timerPaused)return;
+  secondes--;if(secondes<0)secondes=0;
+  var h=Math.floor(secondes/3600),m=Math.floor((secondes%3600)/60),s=secondes%60;
+  timerEl.textContent=h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(secondes<600)timerEl.classList.add('urgent');
+},1000);
+function togglePause(){
+  timerPaused=!timerPaused;
+  pauseBtn.textContent=timerPaused?'▶':'⏸';
+  pauseBtn.style.background=timerPaused?'rgba(255,204,0,.4)':'rgba(255,255,255,.25)';
+  timerEl.style.opacity=timerPaused?'0.5':'1';
+}
+
+var tpStartTime=Date.now(),keyCount=0,pasteCount=0,pasteDetails=[],lastValidationTime=null;
+var keyActiveMs=0,keyLastStart=null,inactiveMs=0,inactiveLastStart=null,inactivityTimer=null;
+var qTimestamps={};
+document.addEventListener('keydown',function(){if(!keyLastStart)keyLastStart=Date.now();resetInact();});
+document.addEventListener('keyup',function(){keyCount++;if(keyLastStart){keyActiveMs+=Date.now()-keyLastStart;keyLastStart=null;}resetInact();});
+document.addEventListener('paste',function(e){pasteCount++;var bl=e.target?e.target.closest('[id^="qb"]'):null;pasteDetails.push({zone:bl?bl.id.replace('qb','Q'):'?',heure:new Date().toLocaleTimeString('fr-FR')});resetInact();});
+function resetInact(){if(inactiveLastStart){inactiveMs+=Date.now()-inactiveLastStart;inactiveLastStart=null;}clearTimeout(inactivityTimer);inactivityTimer=setTimeout(function(){inactiveLastStart=Date.now();},30000);}
+resetInact();
+function recordQTime(id){var now=Date.now();if(!qTimestamps['q'+id])qTimestamps['q'+id]={start:lastValidationTime||tpStartTime};qTimestamps['q'+id].validated=now;qTimestamps['q'+id].seconds=Math.round((now-qTimestamps['q'+id].start)/1000);lastValidationTime=now;}
+function fmtDur(ms){if(ms<0)ms=0;var t=Math.round(ms/1000),h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;if(h>0)return h+'h '+String(m).padStart(2,'0')+'min';if(m>0)return m+'min '+String(s).padStart(2,'0')+'s';return s+'s';}
+function getStats(){return{totalMs:Date.now()-tpStartTime,keyMs:keyActiveMs+(keyLastStart?Date.now()-keyLastStart:0),inactMs:inactiveMs+(inactiveLastStart?Date.now()-inactiveLastStart:0),keyCount:keyCount,pasteCount:pasteCount,pasteDetails:pasteDetails,elapsed:DUREE-secondes};}
+
+var scores={};var TOTAL_Q=40;
+var qComp={1:'Définition',2:'Définition',3:'Définition',4:'Cotation',5:'Définition',6:'Définition',7:'Définition',8:'Cotation',9:'Définition',10:'Définition',11:'Cotation',12:'Cotation',13:'Cotation',14:'Cotation',15:'Cotation',16:'Cotation',17:'Cotation',18:'Cotation',19:'Plan action',20:'Plan action',21:'Plan action',22:'Plan action',23:'Plan action',24:'Plan action',25:'Plan action',26:'Plan action',27:'Plan action',28:'Plan action',29:'EPI',30:'EPI',31:'EPI',32:'EPI',33:'EPI',34:'Calcul',35:'EPI',36:'Synthèse',37:'Synthèse',38:'Synthèse',39:'Synthèse',40:'Rapport rédigé'};
+var qTitres=['','Texte réglementaire du DUER','Notion d\'unité de travail','Fréquence de mise à jour','Criticité du risque R3','Distinguer danger et risque','Sanctions absence DUER','Accessibilité du DUER','Niveaux de la grille de cotation','9 principes généraux de prévention','Hiérarchie des mesures de prévention','Criticité du risque R2','Risque le plus critique','Hiérarchisation des risques','Mesure de prévention pour R3','Réévaluation après action','Distinction P et G','Calcul criticité moyenne plateau','Combien de risques critiques?','Première action priorité absolue','Plan d\'action structuré','Choix EPI pour R5 brûlures','Mesure collective pour le bruit','Seuil de bruit réglementaire','Coût des mesures','Action pour le sol glissant (R2)','Vérifications électriques (R4)','Formation à la sécurité','Acteurs internes de la prévention','Catégories EPI','Critère choix EPI','Renouvellement et entretien','Sanctions refus EPI','Indicateur de suivi sécurité','Calcul du Taux de Fréquence','Pictogrammes EPI','DUER et culture de prévention','Lien DUER et SQCDP','Acteurs externes de la prévention','DUER digital','Plan d\'action DUER plateau Vaucanson'];
+
+var MSG={
+  1:{ok:"Correct ! Décret n°2001-1016 du 5/11/2001. Obligatoire dès le 1er salarié. Inscrit aujourd'hui à l'article L4121-3 du Code du travail.",nok:"DUER = décret 2001-1016 du 5/11/2001. Obligatoire dès 1 salarié, peu importe la taille. Pas de seuil."},
+  2:{ok:"Correct ! Unité de travail = regroupement de postes / zones / activités avec exposition similaire. Permet une analyse cohérente.",nok:"Unité de travail = regroupement d'activités à exposition similaire (ex : zone usinage CNC, atelier soudure, zone stockage)."},
+  3:{ok:"Correct ! MAJ DUER = au minimum 1×/an + après aménagement modifiant les conditions + après accident grave ou MP. Inscrit dans le Code du travail.",nok:"MAJ DUER : 1×/an minimum + aménagement + accident grave + maladie professionnelle. Obligation continue."},
+  4:{ok:"Correct ! C = 4 × 4 = 16. Catégorie CRITIQUE (≥13). Activité à suspendre immédiatement jusqu'à mise en place de mesures (aspiration + masque).",nok:"C = P × G = 4 × 4 = 16. Catégorie CRITIQUE. Suspendre l'activité jusqu'à mesures (aspiration + masque + formation)."},
+  5:{ok:"Correct ! Danger = source intrinsèque de dommage (câble dénudé). Risque = situation où une personne est exposée à un danger (probabilité × gravité).",nok:"Danger = source intrinsèque (câble dénudé). Risque = exposition + conséquence possible. Câble seul = danger. Opérateur en contact = risque."},
+  6:{ok:"Correct ! Amende de 1 500 € (3 000 € en récidive). Responsabilité pénale de l'employeur en cas d'accident grave. Sanction administrative + pénale.",nok:"Sanctions DUER : amende 1 500 € (3 000 € récidive) + responsabilité pénale du dirigeant en cas d'accident. Pas une démarche volontaire !"},
+  7:{ok:"Correct ! DUER accessible à : tous les salariés (article L4121-3), CSE/CHSCT, inspection travail, médecin travail, services prévention.",nok:"DUER accessible à : tous les salariés + CSE + inspection + médecin + CARSAT. Pas confidentiel. Transparence obligatoire."},
+  8:{ok:"Correct ! P 1-4 (rare→très probable), G 1-4 (sans arrêt→décès), priorité ∝ criticité. Les risques à faible criticité sont acceptables.",nok:"Grille DUER : P 1-4, G 1-4, criticité = P×G, priorité ∝ C. Risques à faible C sont acceptables. Pas de millions."},
+  9:{ok:"Correct ! 1er principe = ÉVITER LES RISQUES (supprimer le danger à la source). C'est l'idéal. EPI vient seulement en dernier recours.",nok:"1er principe L4121-2 : ÉVITER les risques (supprimer à la source). EPI = dernier recours. Hiérarchie : éliminer > collectif > individuel."},
+  10:{ok:"Correct ! Hiérarchie : 1) Supprimer 2) Substituer 3) Protections COLLECTIVES 4) EPI. Le collectif AVANT l'individuel (ne dépend pas du port).",nok:"Hiérarchie : Supprimer > Substituer > Collectif > EPI. Le collectif est meilleur (ne dépend pas de l'opérateur). EPI = dernier recours."},
+  11:{ok:"Correct ! C = 3 × 2 = 6. Modéré (M). Action corrective à planifier (consigne nettoyage régulier + balisage).",nok:"C = P × G = 3 × 2 = 6. Catégorie Modéré (M). Action à planifier."},
+  12:{ok:"Correct ! R3 (C=16) est le risque le plus critique. Inhalation fumées + absence aspiration + absence masque = catégorie CRITIQUE. Suspension activité.",nok:"R3 (C=16) = le plus critique. Catégorie CR (≥13). Suspendre l'activité jusqu'à mesures (aspiration, masque, formation)."},
+  13:{ok:"Correct ! Hiérarchisation = C décroissante. CR > I > M > T. Action prioritaire sur les risques les plus graves/fréquents.",nok:"Hiérarchisation : C décroissante. CR (≥13) > I (7-12) > M (4-6) > T (1-3). Priorité à la criticité, pas au coût ni à l'ancienneté."},
+  14:{ok:"Correct ! Mesures R3 : aspiration (collectif), masque ARI (individuel), formation. Hiérarchie respectée. Pas de compensation salariale, pas d'apnée !",nok:"Mesures R3 : aspiration (priorité, collectif) + masque (EPI) + formation. Hiérarchie : collectif puis individuel. Pas de compensation, pas d'apnée."},
+  15:{ok:"Correct ! Recotation = nouvelle P (réduite par mesures) × G (inchangée). Criticité résiduelle = mesure de l'efficacité des actions.",nok:"Recotation P×G après actions. P diminue (probabilité réduite par mesures), G souvent inchangée. La criticité résiduelle mesure l'efficacité."},
+  16:{ok:"Correct ! G=4 = gravité maximale (décès/invalidité). Une étagère lourde qui bascule peut écraser. C'est la CONSÉQUENCE potentielle, pas la probabilité.",nok:"G = gravité potentielle (décès/invalidité = 4). Indépendant de la probabilité. Étagère qui bascule = potentiellement mortel → G=4."},
+  17:{ok:"Correct ! Cmoy ≈ 8,75. Catégorie inacceptable (I) en moyenne. Le plateau a besoin d'un plan d'action ambitieux.",nok:"Calcul : 70/8 = 8,75. Catégorie Inacceptable en moyenne. Plan d'action ambitieux indispensable."},
+  18:{ok:"Correct ! 1 seul risque CR : R3 (C=16). Suspension de l'activité jusqu'à mise en place des mesures.",nok:"1 seul risque CR : R3 (C=16, fumées soudure). Suspension d'activité obligatoire."},
+  19:{ok:"Correct ! Priorité : R3 (CR, C=16). Suspendre soudure → installer aspiration + masques + formation → reprise.",nok:"Priorité absolue = R3 (critique). Suspension activité + aspiration + masques + formation. Avant tout retour à l'activité."},
+  20:{ok:"Correct ! Plan action : action + qui + quand + budget + indicateur + réévaluation. Méthode 5W (What, Who, When, Where, Why) appliquée à la prévention.",nok:"Plan action : action + responsable + date + budget + indicateur + réévaluation. Méthode 5W. Sans ces éléments, le plan est inactionnable."},
+  21:{ok:"Correct ! EPI soudure obligatoires : tablier cuir/ininflammable + gants soudure + masque/cagoule + chaussures sécurité. EN 388 + EN ISO 11611.",nok:"EPI soudure : tablier cuir + gants spécifiques + masque/cagoule + chaussures sécurité. Normes EN 388/11611. Pas de coton fin (inflammable) !"},
+  22:{ok:"Correct ! Mesure collective = encoffrement / panneaux acoustiques. Réduit la nuisance à la source. EPI bouchons = COMPLÉMENTAIRE (pas remplacement).",nok:"Mesure collective d'abord : encoffrement / panneaux acoustiques. EPI bouchons = COMPLÉMENT (pas substitut). Hiérarchie prévention."},
+  23:{ok:"Correct ! Seuils bruit : 80 dB (action inf.) > 85 dB (port obligatoire EPI + contrôle médical) > 87 dB (limite à ne pas dépasser). Décret 2006-892.",nok:"Bruit : 80 dB (information + EPI dispo), 85 dB (port obligatoire), 87 dB (limite max). Réglementation européenne 2003/10/CE."},
+  24:{ok:"Correct ! Budget = 5 300 € pour traiter le risque critique R3. À comparer au coût d'un cancer professionnel (plusieurs millions €).",nok:"Calcul : 4 500 + 800 = 5 300 €. Coût modeste face aux conséquences d'une exposition chronique (cancers professionnels, IPP)."},
+  25:{ok:"Correct ! Combinaison : procédure nettoyage + bac à copeaux + signalétique + chaussures antidérapantes. Approche systémique.",nok:"R2 : nettoyage régulier + bac copeaux + signalétique + chaussures antidérapantes. Approche multi-niveaux (organisationnel + collectif + EPI)."},
+  26:{ok:"Correct ! Immédiat : isoler + consigner + électricien habilité. Préventif : vérification périodique obligatoire annuelle (décret 88-1056).",nok:"Immédiat : consigner + électricien habilité. Préventif : vérification annuelle (décret 88-1056). PAS de scotch ! PAS d'auto-intervention."},
+  27:{ok:"Correct ! Formation obligatoire : tout nouveau + changement de poste + intérimaires/temporaires. Article L4141-1 à L4141-4 du Code du travail.",nok:"Formation sécurité OBLIGATOIRE : embauche + changement poste + intérimaires + temporaires. Pas réservée aux cadres ! Articles L4141."},
+  28:{ok:"Correct ! Acteurs : employeur (responsable légal) + salariés (acteurs) + CSE (consultatif) + animateur HSE + médecin travail + CARSAT (externe).",nok:"Prévention = chaîne d'acteurs : employeur (responsable), salariés (acteurs), CSE (avis), HSE (animateur), médecin (santé), CARSAT (externe)."},
+  29:{ok:"Correct ! 3 catégories : I (risques mineurs) / II (risques moyens) / III (risques graves/mortels). Selon le règlement UE 2016/425. Cat III = vérification annuelle obligatoire.",nok:"EPI : Cat I (mineurs) / II (moyens) / III (graves). Règlement UE 2016/425. Cat III = vérification annuelle + traçabilité."},
+  30:{ok:"Correct ! Critères : adapté au risque + CE + norme EN + morphologie + acceptation salarié. Un EPI non porté est inutile.",nok:"EPI : adapté au risque + CE + norme EN + ergonomie + acceptation. La direction choisit avec le salarié et le médecin du travail."},
+  31:{ok:"Correct ! Obligation employeur : fournir gratuitement + entretenir + renouveler + former + vérifier (Cat III annuelle). Code travail R4321-4 et suiv.",nok:"Employeur OBLIGE de : fournir gratuit + entretenir + renouveler + former + vérifier Cat III/an. Pas d'achat par le salarié !"},
+  32:{ok:"Correct ! Refus EPI = faute. Sanction disciplinaire possible. L'employeur DOIT faire respecter le port (sinon engage sa responsabilité).",nok:"Refus EPI = faute (sanction possible). L'employeur engage sa responsabilité s'il laisse faire. Les EPI ne sont pas optionnels."},
+  33:{ok:"Correct ! Indicateurs prévention : TF, TG, presqu'accidents, jours sans accident. Statistiques officielles CARSAT/INRS.",nok:"Indicateurs prévention : TF (fréquence), TG (gravité), presqu'accidents, jours sans AT. Suivi quantifié et comparable."},
+  34:{ok:"Correct ! TF ≈ 16,7. Indicateur > moyenne nationale (~22). Bon mais peut être amélioré.",nok:"TF = (2 × 1 000 000) / 120 000 ≈ 16,7. Moyenne nationale industrie ~22. Indicateur utile pour comparaison."},
+  35:{ok:"Correct ! Pictogrammes ISO 7010 : ronds bleus = obligation. Triangle jaune = danger. Cercle rouge = interdiction. Carré vert = secours.",nok:"Pictogrammes ISO 7010 : rond bleu (obligation EPI), triangle jaune (danger), cercle rouge (interdiction), carré vert (secours)."},
+  36:{ok:"Correct ! Culture prévention = implication des salariés + déclaration presqu'accidents + valorisation initiatives + document vivant.",nok:"Culture prévention : implication salariés + presqu'accidents + valorisation + document vivant. Pas magique ni purement coercitif."},
+  37:{ok:"Correct ! DUER (statique, annuel) ↔ SQCDP (dynamique, quotidien). Le SQCDP fait remonter terrain → MAJ DUER. Complémentaires.",nok:"DUER (analyse périodique) ↔ SQCDP (suivi quotidien). Le SQCDP fait remonter au DUER. Outils complémentaires de la prévention."},
+  38:{ok:"Correct ! Acteurs externes : Inspection (contrôle), CARSAT (conseil + tarification AT/MP), INRS (doc/formation), OPPBTP, médecin travail.",nok:"Acteurs externes : Inspection + CARSAT (conseil + tarification) + INRS (doc/formation) + OPPBTP + médecin travail. Écosystème riche."},
+  39:{ok:"Correct ! DUER numérique : MAJ facile + traçabilité + accessibilité partagée. La forme numérique NE supprime PAS les obligations.",nok:"DUER numérique : MAJ + traçabilité + partage. Mêmes obligations légales (forme libre, contenu obligatoire)."}
+};
+
+var CORRECT_ANS={
+  1:{type:'radio',ans:'d'},
+  2:{type:'radio',ans:'d'},
+  3:{type:'radio',ans:'c'},
+  4:{type:'radio',ans:'c'},
+  5:{type:'radio',ans:'d'},
+  6:{type:'radio',ans:'a'},
+  7:{type:'radio',ans:'b'},
+  8:{type:'checkbox',ans:["a", "b", "d"]},
+  9:{type:'radio',ans:'b'},
+  10:{type:'radio',ans:'d'},
+  11:{type:'num',ans:6,tol:2},
+  12:{type:'radio',ans:'d'},
+  13:{type:'radio',ans:'d'},
+  14:{type:'checkbox',ans:["a", "b", "d"]},
+  15:{type:'radio',ans:'c'},
+  16:{type:'radio',ans:'d'},
+  17:{type:'num',ans:8.75,tol:3},
+  18:{type:'num',ans:1,tol:2},
+  19:{type:'radio',ans:'a'},
+  20:{type:'radio',ans:'c'},
+  21:{type:'radio',ans:'b'},
+  22:{type:'radio',ans:'c'},
+  23:{type:'radio',ans:'a'},
+  24:{type:'num',ans:5300,tol:2},
+  25:{type:'radio',ans:'b'},
+  26:{type:'radio',ans:'b'},
+  27:{type:'checkbox',ans:["a", "b", "d"]},
+  28:{type:'radio',ans:'a'},
+  29:{type:'radio',ans:'b'},
+  30:{type:'radio',ans:'a'},
+  31:{type:'radio',ans:'c'},
+  32:{type:'radio',ans:'b'},
+  33:{type:'radio',ans:'a'},
+  34:{type:'num',ans:16.7,tol:5},
+  35:{type:'checkbox',ans:["a", "b", "d"]},
+  36:{type:'radio',ans:'a'},
+  37:{type:'radio',ans:'c'},
+  38:{type:'radio',ans:'c'},
+  39:{type:'checkbox',ans:["a", "b", "d"]}
+};
+
+function setFB(id,ok,okMsg,nokMsg){
+  recordQTime(id);
+  var el=document.getElementById('fb'+id);
+  scores['q'+id]=ok?1:0;
+  if(ok){el.className='feedback ok show';el.innerHTML='<span class="feedback-icon">✅</span><div class="feedback-content">'+okMsg+'</div>';}
+  else{el.className='feedback nok show';el.innerHTML='<span class="feedback-icon">❌</span><div class="feedback-content"><strong>À revoir.</strong> '+nokMsg+'</div>';}
+  disableQ(id);updateScore();
+  setTimeout(function(){var e=document.getElementById('fb'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});},80);
+  if(document.querySelectorAll('.feedback.show').length>=TOTAL_Q)setTimeout(showFinal,600);
+}
+function disableQ(id){var b=document.getElementById('qb'+id);if(b)b.querySelectorAll('input,select,textarea,button.validate-btn').forEach(function(e){e.disabled=true;});}
+function updateScore(){
+  var pts=Object.values(scores).reduce(function(a,b){return a+b;},0);
+  var done=document.querySelectorAll('.feedback.show').length;
+  var sd=document.getElementById('score-display');if(sd)sd.textContent=pts+' / '+TOTAL_Q;
+  document.getElementById('progress-fill').style.width=(done/TOTAL_Q*100)+'%';
+  document.getElementById('progress-text').textContent=done+' / '+TOTAL_Q+' questions validées';
+  [[10,'m1'],[18,'m2'],[28,'m3'],[35,'m4']].forEach(function(j){if(done>=j[0])document.getElementById(j[1]).classList.add('done');});
+  if(done>=TOTAL_Q)document.getElementById('m5').classList.add('done');
+}
+
+function val(id){
+  if(!tpUnlocked){alert('Regardez d\'abord la vidéo et cochez les points clés pour débloquer le TP.');return;}
+  var cfg=CORRECT_ANS[id];
+  if(!cfg){
+    if(id===40){valTexte40();return;}
+    return;
+  }
+  var ok_msg=MSG[id]?MSG[id].ok:'Bonne réponse !';
+  var nok_msg=MSG[id]?MSG[id].nok:'Réponse incorrecte, consultez le cours.';
+  if(cfg.type==='radio'){
+    var v=document.querySelector('input[name="q'+id+'"]:checked');
+    if(!v){alert('Veuillez sélectionner une réponse.');return;}
+    var ok=v.value===cfg.ans;
+    document.querySelectorAll('input[name="q'+id+'"]').forEach(function(r){var li=r.closest('.option-item');if(r.value===cfg.ans)li.classList.add('correct');else if(r.checked&&!ok)li.classList.add('incorrect');});
+    setFB(id,ok,ok_msg,nok_msg);
+  }else if(cfg.type==='checkbox'){
+    var checked=[];
+    document.querySelectorAll('input[name="q'+id+'"]:checked').forEach(function(r){checked.push(r.value);});
+    if(!checked.length){alert('Cochez au moins une réponse.');return;}
+    var ok=cfg.ans.length===checked.length&&cfg.ans.every(function(c){return checked.includes(c);});
+    document.querySelectorAll('input[name="q'+id+'"]').forEach(function(r){var li=r.closest('.option-item');if(cfg.ans.includes(r.value))li.classList.add('correct');else if(r.checked)li.classList.add('incorrect');});
+    setFB(id,ok,ok_msg,nok_msg);
+  }else if(cfg.type==='num'){
+    var v2=parseFloat(document.getElementById('num'+id).value);
+    if(isNaN(v2)){alert('Entrez une valeur numérique.');return;}
+    var ok=Math.abs(v2-cfg.ans)/(Math.abs(cfg.ans)||1)*100<=cfg.tol;
+    document.getElementById('num'+id).classList.add(ok?'correct':'incorrect');
+    setFB(id,ok,ok_msg,nok_msg);
+  }
+}
+
+function valTexte40(){
+  var txt=document.getElementById('a40').value.trim();
+  if(txt.length<100){alert('Veuillez rédiger un plan d\'action plus complet (minimum 100 caractères).');return;}
+  document.getElementById('a40').classList.add('correct');
+  setFB(40,true,
+    'Plan d\'action enregistré ! Bonne structure : priorisation par criticité, distinction collectif/EPI, responsables/délais/budget. Démarche conforme L4121-2.',
+    '');
+}
+
+function valQ15(){
+  var sel=document.querySelector('input[name="q14"]:checked') || document.querySelector('input[name="q15"]:checked');
+  if(!sel){alert('Sélectionnez une réponse.');return;}
+  var ok=(sel.value==='b');
+  document.querySelectorAll('input[name="q14"], input[name="q15"]').forEach(function(r){
+    var li=r.closest('.option-item');
+    if(li){
+      if(r.value==='b')li.classList.add('correct');
+      else if(r.checked)li.classList.add('incorrect');
+    }
+  });
+  setFB(15,ok,
+    "Correct ! La formation est en dernier non pas parce qu'elle est sans valeur, mais parce qu'elle dépend du comportement humain (faillible). Une protection collective (écran, aspiration) agit quel que soit l'état de l'opérateur. La formation est indispensable MAIS complémentaire : elle ne peut pas être la seule mesure pour un risque grave.",
+    "La formation est en dernier non pas par manque de valeur, mais parce qu'elle dépend du comportement humain. Une barrière physique agit indépendamment du comportement. Ce n'est pas une question de coût ni de responsabilité des salariés."
+  );
+}
+
+function valClassement9(){
+  var corr={s9a:'chimique',s9b:'electrique',s9c:'chute',s9d:'bruit'};
+  var nb=0,ok=true;
+  Object.keys(corr).forEach(function(k){
+    var el=document.getElementById(k);
+    el.classList.remove('correct','incorrect');
+    if(!el.value){ok=false;return;}
+    if(el.value===corr[k]){el.classList.add('correct');nb++;}
+    else{el.classList.add('incorrect');ok=false;}
+    el.disabled=true;
+  });
+  var scored=(nb===4);
+  if(!scored&&nb>0){
+    setFB(9,false,'Classement partiel ('+nb+'/4). R3 fumées = Risque chimique | R4 câble = Risque électrique | R2 sol glissant = Chute de plain-pied | R8 bruit = Risque bruit/TMS.','');
+  } else {
+    setFB(9,scored,'Parfait ! R3 (fumées de soudure) → Risque chimique (substances toxiques inhalées). R4 (câble dénudé) → Risque électrique (contact direct). R2 (sol glissant) → Chute de plain-pied (sans dénivellation). R8 (87 dB) → Risque bruit pouvant causer des TMS auditifs (surdité professionnelle).','Corrections : R3=Chimique, R4=Électrique, R2=Chute plain-pied, R8=Bruit/TMS.');
+  }
+}
+
+
+
+function showFinal(){
+  var classe=document.getElementById('eleve-classe').value||'';
+  var ce=document.getElementById('classe-envoi');
+  if(ce&&classe) ce.value=classe;
+
+  if(classe==='GRETA'){
+    var ptsG=Object.values(scores).reduce(function(a,b){return a+b;},0);
+    var noteG=Math.round((ptsG/TOTAL_Q*20)*10)/10;
+    var htmlG='<div style="font-family:Barlow,sans-serif;margin-top:10px;text-align:center;padding:28px 20px;background:#f4f6f8;border-radius:12px;border:1px solid #e0e4e8;">'
+      +'<div style="font-size:.8rem;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:700;">Note obtenue</div>'
+      +'<div style="font-size:2.8rem;font-weight:800;color:#1a3a6b;line-height:1;">'+noteG+'<span style="font-size:1.3rem;color:#888;font-weight:600;"> / 20</span></div>'
+      +'<div style="font-size:.85rem;color:#777;margin-top:10px;">'+ptsG+' bonnes reponses sur '+TOTAL_Q+' questions</div>'
+      +'</div>';
+    var sumElG=document.getElementById('comp-summary');
+    if(sumElG)sumElG.innerHTML=htmlG;
+    document.getElementById('final-note').style.display='none';
+    document.getElementById('final-section').style.display='block';
+    document.getElementById('final-section').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  var PN_LBL=['','Maitrise insuffisante','Debut de maitrise','Maitrise fragile','Presque maitrise','Maitrise satisfaisante','Tres bonne maitrise'];
+  var PN_BG=['','#EE0000','#FFC000','#FFFF00','#92D050','#4EA72E','#275317'];
+  var PN_TC=['','#fff','#333','#333','#1a3a00','#fff','#fff'];
+  function lvl(r){if(r>=0.90)return 6;if(r>=0.75)return 5;if(r>=0.60)return 4;if(r>=0.40)return 3;if(r>=0.20)return 2;return 1;}
+  function pct(qs){var ok=0,tot=0;qs.forEach(function(n){if(scores['q'+n]!==undefined){tot++;if(scores['q'+n]===1)ok++;}});return tot>0?ok/tot:0;}
+
+  // Q1-5 + Q12-16 : réglementation + principes PGP → identifier/analyser les risques
+  // Q6-11 + Q17-20 : cotation + plan d'action → prévenir et agir
+  var Q_T1=[4, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
+  var Q_T2=[1, 2, 3, 5, 6, 7, 9, 10];
+
+  var isCIP=['1CIP G1','1CIP G2','2CIP G1','2CIP G2'].indexOf(classe)>=0;
+  var isPMIA=['2PMIA1','2PMIA2','2PMIA3','2PMIA4','2PMIA5'].indexOf(classe)>=0;
+
+  var cpList  =isCIP?['CP06','CP07']:isPMIA?['CP2.3','CP2.4']:['CP09','CP10'];
+  var cpDescCIP  ={'CP06':'Identifier des risques au poste de travail','CP07':'Appliquer des modes operatoires conformes aux objectifs de qualite et de securite'};
+  var cpDescPMIA ={'CP2.3':'Identifier les risques pour les biens et les personnes','CP2.4':'Mettre en oeuvre les mesures de prevention associees aux risques identifies'};
+  var cpDescPLP  ={'CP09':'Identifier des risques pour la production, les biens, l\'environnement, la personne et la securite','CP10':'Appliquer les mesures de prevention de tous les risques identifies'};
+  var cpDesc=isCIP?cpDescCIP:isPMIA?cpDescPMIA:cpDescPLP;
+
+  var html='<div style="font-family:Barlow,sans-serif;margin-top:10px;">';
+  html+='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;padding:10px 12px;background:#f4f6f8;border-radius:8px;border:1px solid #e0e4e8;">';
+  html+='<div style="width:100%;font-size:.72rem;font-weight:700;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Code couleur Pronote</div>';
+  [[6,'#275317','Tres bonne maitrise'],[5,'#4EA72E','Maitrise satisfaisante'],[4,'#92D050','Presque maitrise'],[3,'#FFFF00','Maitrise fragile'],[2,'#FFC000','Debut de maitrise'],[1,'#EE0000','Maitrise insuffisante']].forEach(function(it){
+    html+='<span style="display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:#333;background:#fff;border:1px solid #ddd;border-radius:5px;padding:3px 8px;"><span style="width:14px;height:14px;border-radius:3px;background:'+it[1]+';border:1px solid rgba(0,0,0,.15);flex-shrink:0;"></span>'+it[2]+'</span>';
+  });
+  html+='</div>';
+
+  cpList.forEach(function(cp,i){
+    var qs=i===0?Q_T1:Q_T2;
+    var desc=cpDesc[cp]||cp;
+    var ratio=pct(qs),niveau=lvl(ratio);
+    var ok=0,answered=0;
+    qs.forEach(function(n){if(scores['q'+n]!==undefined){answered++;if(scores['q'+n]===1)ok++;}});
+    html+='<div style="display:flex;align-items:stretch;border-radius:8px;overflow:hidden;border:1px solid #ddd;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.08);">';
+    html+='<div style="background:linear-gradient(135deg,#7f0000,#c62828);color:#fff;padding:12px 10px;width:80px;min-width:80px;display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:.9rem;font-weight:800;text-align:center;line-height:1.2;">'+cp+'</div>';
+    html+='<div style="flex:1;padding:10px 14px;background:#fff;"><div style="font-size:.85rem;color:#222;line-height:1.5;font-weight:600;">'+desc+'</div><div style="font-size:.72rem;color:#888;margin-top:4px;">'+ok+'/'+answered+' questions reussies sur ce TP</div></div>';
+    html+='<div style="display:flex;flex-direction:column;gap:2px;padding:6px 8px;background:#fafafa;border-left:1px solid #eee;width:200px;min-width:200px;">';
+    for(var niv=6;niv>=1;niv--){
+      var active=(niv===niveau);
+      html+='<div style="height:20px;border-radius:4px;background:'+PN_BG[niv]+';display:flex;align-items:center;padding:0 8px;font-size:.63rem;font-weight:'+(active?900:500)+';color:'+PN_TC[niv]+';'+(active?'box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(0,0,0,.4);position:relative;z-index:1;':'opacity:.18;')+'">'+(PN_LBL[niv])+(active?' ◄':'')+'</div>';
+    }
+    html+='</div></div>';
+  });
+  html+='</div>';
+
+  document.getElementById('comp-summary').innerHTML=html;
+  document.getElementById('final-note').style.display='none';
+  document.getElementById('final-section').style.display='block';
+  document.getElementById('final-section').scrollIntoView({behavior:'smooth'});
+}
+
+var classeTokens={'2PMIA1':'https://nuage01.apps.education.fr/index.php/s/SFkasij3W8ZdY6X','2PMIA2':'https://nuage01.apps.education.fr/index.php/s/KWTiQL5cLkQnRkw','2PMIA3':'https://nuage01.apps.education.fr/index.php/s/Exk55DptbrJHmL8','2PMIA4':'https://nuage01.apps.education.fr/index.php/s/NyFcyoajmiDHWBN','2PMIA5':'https://nuage01.apps.education.fr/index.php/s/wbF4sqQkLCCr5Nj','1PLP':'https://nuage01.apps.education.fr/index.php/s/Q2LF28DBwcDbaZ3','TPLP':'https://nuage01.apps.education.fr/index.php/s/rq7TaGNDJc7MxZn','1CIP G1':'https://nuage01.apps.education.fr/index.php/s/ZDYKjyNzsF4LNNC','1CIP G2':'https://nuage01.apps.education.fr/index.php/s/KQp5LCtEKJsGXRT','2CIP G1':'https://nuage01.apps.education.fr/index.php/s/kybKoENkrz9qKEo','2CIP G2':'https://nuage01.apps.education.fr/index.php/s/5XdDxzyAJDFSgF4','GRETA':'https://nuage01.apps.education.fr/index.php/s/5Zf3m4FodLiToqg'};
+function envoyerNC(){
+  var cl=document.getElementById('classe-envoi').value;
+  if(!cl){alert('Sélectionnez votre classe.');return;}
+  var url=classeTokens[cl];
+  if(url){window.open(url,'_blank');document.getElementById('send-status').textContent='✅ Dossier NextCloud ouvert pour la classe '+cl+'. Déposez-y votre PDF.';document.getElementById('send-status').className='success';}
+}
+
+function safe(s){return String(s||'').replace(/[éèêëæœÉÈÊËÉ]/g,'e').replace(/[àâäÀÂÄ]/g,'a').replace(/[ùûüÙÛÜ]/g,'u').replace(/[îïÎÏ]/g,'i').replace(/[ôöÔÖ]/g,'o').replace(/[çÇ]/g,'c').replace(/[ñÑ]/g,'n').replace(/°/g,' ').replace(/[–—]/g,'-').replace(/[""«»]/g,'"').replace(/['']/g,"'").replace(/…/g,'...').replace(/✅|\[OK\]/g,'[OK]').replace(/❌|\[X\]/g,'[X]').replace(/⚠️|\[!\]/g,'[!]').replace(/[^\x20-\x7E]/g,'?').replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');}
+function wrapL(s,max){var w=String(s||'').split(' '),l=[],c='';w.forEach(function(wd){if(((c?c+' ':'')+wd).length<=max){c=(c?c+' ':'')+wd;}else{if(c)l.push(c);c=wd;}});if(c)l.push(c);return l.length?l:[''];}
+
+function lancerPDF(){
+  var nom=document.getElementById('eleve-nom').value.trim()||'(non renseigne)';
+  var prenom=document.getElementById('eleve-prenom').value.trim()||'(non renseigne)';
+  var classe=document.getElementById('eleve-classe').value||'(non renseigne)';
+  var isGRETA=(classe==='GRETA');
+  var pts=Object.values(scores).reduce(function(a,b){return a+b;},0);
+  var dateStr=new Date().toLocaleDateString('fr-FR');
+  var stats=getStats();
+  var W=595,H=842,ML=40,MR=40,MT=40;
+  var pages=[],curPage=null,y=0;
+  function newPage(){curPage={parts:[]};pages.push(curPage);y=H-MT;}
+  function chkY(n){if(!curPage||y<50+n)newPage();}
+  var CW=W-ML-MR;
+  function t(s,x,yy,sz,bold,r,g,b){r=r||0;g=g||0;b=b||0;curPage.parts.push('BT '+(bold?'/F2':'/F1')+' '+sz+' Tf '+r+' '+g+' '+b+' rg '+x+' '+yy+' Td ('+safe(s)+') Tj ET');}
+  function rect(x,yy,w,h,r,g,b){curPage.parts.push(r+' '+g+' '+b+' rg '+x+' '+yy+' '+w+' '+h+' re f 0 0 0 rg');}
+  function hline(yy){curPage.parts.push('0.7 0.7 0.7 RG 0.5 w '+ML+' '+yy+' m '+(W-MR)+' '+yy+' l S 0 0 0 RG');}
+  function addT(s,sz,bold,r,g,b,ind){sz=sz||10;ind=ind||0;var mc=Math.floor((CW-ind)/(sz*0.52));wrapL(s,mc).forEach(function(l){chkY(sz+5);t(l,ML+ind,y,sz,bold||false,r||0,g||0,b||0);y-=(sz+4);});}
+  function addSp(h){y-=(h||8);}
+  function addHL(){chkY(8);hline(y);y-=8;}
+  function addH2(s,r,g,b){chkY(20);rect(ML,y-2,CW,16,r,g,b);t(s,ML+5,y+1,10,true,1,1,1);y-=20;}
+  function addRow(cells,widths,isHdr,even){var rh=13;chkY(rh+2);var ry=y-2;if(isHdr)rect(ML,ry,CW,rh,0.78,0.16,0.16);else if(even)rect(ML,ry,CW,rh,1.0,0.93,0.93);var x=ML;cells.forEach(function(c,i){t(String(c||'').substring(0,widths[i]>120?70:30),x+2,y,8,isHdr,isHdr?1:0,isHdr?1:0,isHdr?1:0);x+=widths[i];});y-=rh;}
+
+  newPage();
+  rect(ML,y-4,CW,28,0.78,0.16,0.16);
+  t('TP DUER - Cotation Risques & Plan Prevention - Lycee Vaucanson',ML+5,y+10,10,true,1,1,1);
+  t(nom.toUpperCase()+' '+prenom+' | Classe: '+classe+' | Date: '+dateStr,ML+5,y-1,9,false,1,0.85,0.85);
+  y-=36;
+  chkY(30);rect(ML,y-4,CW,26,1.0,0.93,0.93);
+  t(isGRETA?('NOTE : '+(Math.round((pts/TOTAL_Q*20)*10)/10)+' / 20   |   Questions validees : '+Object.keys(scores).length+' / '+TOTAL_Q):('Questions validees : '+Object.keys(scores).length+' / '+TOTAL_Q+' | Notation par competences Pronote'),ML+5,y+6,12,true,0.78,0.16,0.16);
+  y-=36;addSp(4);
+
+  addH2('RAPPEL – DUER ET PREVENTION DES RISQUES',0.78,0.16,0.16);
+  addT('DUER obligatoire des le 1er salarie (decret 2001-1016). Mise a jour annuelle minimale. Methode : Identifier → Evaluer → Prevenir.',9,false);
+  addT('Cotation : Criticite C = Probabilite P x Gravite G. T(C<=3) | M(4-6) | I(7-12) | CR(C>=13 : suspension immediate).',9,false);
+  addT('9 PGP ordre de priorite : Eviter > A la source > Protection collective > EPI > Formation. Jamais compter uniquement sur l\'humain.',9,true,0.5,0.1,0.1);
+  addT('Plateau Vaucanson : 8 risques | Criticites R1=9, R2=6, R3=16(CR), R4=8, R5=9, R6=6, R7=8, R8=8 | Total=70 pts | Budget prevention=4650euros.',9,false);
+  addSp(6);addHL();addSp(4);
+
+  var isCIP2=['1CIP G1','1CIP G2','2CIP G1','2CIP G2'].indexOf(classe)>=0;
+  var isPMIA2=['2PMIA1','2PMIA2','2PMIA3','2PMIA4','2PMIA5'].indexOf(classe)>=0;
+  var PN_LBL2=['','Maitrise insuffisante','Debut de maitrise','Maitrise fragile','Presque maitrise','Maitrise satisfaisante','Tres bonne maitrise'];
+  function lvlPDF(r){if(r>=0.90)return 6;if(r>=0.75)return 5;if(r>=0.60)return 4;if(r>=0.40)return 3;if(r>=0.20)return 2;return 1;}
+  function pctPDF(qs){var ok=0,tot=0;qs.forEach(function(n){if(scores['q'+n]!==undefined){tot++;if(scores['q'+n]===1)ok++;}});return tot>0?ok/tot:0;}
+  var Q_T1_PDF=[1,2,3,4,5,12,13,14,15,16];
+  var Q_T2_PDF=[6,7,8,9,10,11,17,18,19,20];
+  var cpList2=isCIP2?['CP06','CP07']:isPMIA2?['CP2.3','CP2.4']:['CP09','CP10'];
+  var cpDescCIP2={'CP06':'Identifier des risques au poste de travail','CP07':'Appliquer des modes operatoires conformes aux objectifs de qualite et de securite'};
+  var cpDescPMIA2={'CP2.3':'Identifier les risques pour les biens et les personnes','CP2.4':'Mettre en oeuvre les mesures de prevention associees aux risques identifies'};
+  var cpDescPLP2={'CP09':'Identifier des risques pour la production, les biens, l\'environnement, la personne et la securite','CP10':'Appliquer les mesures de prevention de tous les risques identifies'};
+  var cpDesc2=isCIP2?cpDescCIP2:isPMIA2?cpDescPMIA2:cpDescPLP2;
+
+  if(!isGRETA){
+  addH2('NOTATION PAR COMPETENCES PRONOTE',0.78,0.16,0.16);
+  var PN_BG2=[[0,0,0],[0.933,0,0],[1,0.753,0],[1,1,0],[0.573,0.816,0.314],[0.306,0.655,0.180],[0.153,0.325,0.090]];
+  addT('Code couleur Pronote :',8,true,0.3,0.3,0.3);
+  addSp(2);
+  var legY=y;
+  [[6,'Tres bonne maitrise'],[5,'Maitrise satisfaisante'],[4,'Presque maitrise'],[3,'Maitrise fragile'],[2,'Debut de maitrise'],[1,'Maitrise insuffisante']].forEach(function(it,idx){
+    var col=idx%3,row=Math.floor(idx/3);
+    var lx=ML+col*172,ly=legY-row*13;
+    rect(lx,ly-2,8,8,PN_BG2[it[0]][0],PN_BG2[it[0]][1],PN_BG2[it[0]][2]);
+    t(it[1],lx+11,ly-2,7,false,0.25,0.25,0.25);
+  });
+  y=legY-13-13;
+  addSp(4);
+  cpList2.forEach(function(cp,i){
+    var qs=i===0?Q_T1_PDF:Q_T2_PDF;
+    var ratio=pctPDF(qs),niveau=lvlPDF(ratio);
+    var ok=0,answered=0;
+    qs.forEach(function(n){if(scores['q'+n]!==undefined){answered++;if(scores['q'+n]===1)ok++;}});
+    chkY(16);
+    rect(ML,y-2,50,14,0.78,0.16,0.16);
+    t(cp,ML+3,y+1,9,true,1,1,1);
+    t(cpDesc2[cp]||cp,ML+55,y+1,8,false,0.2,0.2,0.2);
+    rect(ML+55,y-10,8,8,PN_BG2[niveau][0],PN_BG2[niveau][1],PN_BG2[niveau][2]);
+    t('Niveau '+niveau+'/6 - '+PN_LBL2[niveau]+' ('+ok+'/'+answered+')',ML+67,y-8,8,true,0.5,0.1,0.1);
+    y-=20;
+  });
+  addSp(6);addHL();addSp(4);
+  }
+
+  addH2('DETAIL DES 40 QUESTIONS',0.78,0.16,0.16);
+  var wQ=[20,145,50,45,CW-260];
+  addRow(['N','Question','Comp.','Resultat','Reponse'],wQ,true);
+  var ev2=false;
+  for(var q=1;q<=TOTAL_Q;q++){
+    var ok2=scores['q'+q];
+    var res=ok2===undefined?'- N/R':(ok2===1?'[OK] Juste':'[X] Faux');
+    var rep='';
+    try{
+      if([1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 15, 16, 19, 20, 21, 22, 23, 25, 26, 28, 29, 30, 31, 32, 33, 36, 37, 38].indexOf(q)>=0){var sel=document.querySelector('input[name="q'+q+'"]:checked');rep=sel?'Option '+sel.value:'-';}
+      if(q===8){var cc=[];document.querySelectorAll('input[name="q8"]:checked').forEach(function(r){cc.push(r.value);});rep=cc.length?cc.join(','):'-';}
+      if(q===14){var cc=[];document.querySelectorAll('input[name="q14"]:checked').forEach(function(r){cc.push(r.value);});rep=cc.length?cc.join(','):'-';}
+      if(q===27){var cc=[];document.querySelectorAll('input[name="q27"]:checked').forEach(function(r){cc.push(r.value);});rep=cc.length?cc.join(','):'-';}
+      if(q===35){var cc=[];document.querySelectorAll('input[name="q35"]:checked').forEach(function(r){cc.push(r.value);});rep=cc.length?cc.join(','):'-';}
+      if(q===39){var cc=[];document.querySelectorAll('input[name="q39"]:checked').forEach(function(r){cc.push(r.value);});rep=cc.length?cc.join(','):'-';}
+      if(q===11)rep=document.getElementById('num11').value||'-';
+      if(q===17)rep=document.getElementById('num17').value||'-';
+      if(q===18)rep=document.getElementById('num18').value||'-';
+      if(q===24)rep=document.getElementById('num24').value||'-';
+      if(q===34)rep=document.getElementById('num34').value||'-';
+      if(q===40)rep=(document.getElementById('a40').value||'').substring(0,50);
+    }catch(e){rep='-';}
+    addRow([q,qTitres[q].substring(0,55),qComp[''+q]||'-',res,rep.substring(0,50)],wQ,false,ev2);ev2=!ev2;
+  }
+  addSp(8);addHL();addSp(4);
+
+  addH2('PLAN DE PREVENTION – PLATEAU VAUCANSON',0.78,0.16,0.16);
+  wrapL(document.getElementById('a40').value.trim()||'(non redige)',90).forEach(function(l){chkY(12);t(l,ML,y,9,false,0.2,0.2,0.2);y-=13;});
+  addSp(8);addHL();addSp(4);
+
+
+  // ── TEMPS DE REPONSE PAR QUESTION ──
+  try{
+    addH2('TEMPS DE REPONSE PAR QUESTION',0.18,0.48,0.27);
+    var wH=[18,CW-215,45,50,52,50];
+    addRow(['N','Question','Heure','Tps rep.','Resultat','Obs.'],wH,true);
+    var evH=false;
+    for(var qi=1;qi<=TOTAL_Q;qi++){
+      var qt2=qTimestamps['q'+qi];var sc2=scores['q'+qi];
+      var hStr='-',dStr='-',obs2='',res2='-';
+      if(qt2&&qt2.validated){
+        var d2=new Date(qt2.validated);
+        hStr=String(d2.getHours()).padStart(2,'0')+':'+String(d2.getMinutes()).padStart(2,'0')+':'+String(d2.getSeconds()).padStart(2,'0');
+        var sec2=qt2.seconds||0;
+        dStr=sec2>60?Math.floor(sec2/60)+'min'+String(sec2%60).padStart(2,'0')+'s':sec2+'s';
+        res2=sc2===1?'[OK]':'[X]';
+        if(sec2<8)obs2='Tres rapide';else if(sec2<20)obs2='Rapide';else if(sec2>600)obs2='>10min';
+      }else{obs2='Non rep.';res2='-';}
+      addRow([qi,(qTitres[qi]||('Q'+qi)).toString().substring(0,28),hStr,dStr,res2,obs2],wH,false,evH);evH=!evH;
+    }
+    addSp(6);addHL();addSp(4);
+  }catch(e){}
+
+  addH2('INDICATEURS DE COMPORTEMENT',0.17,0.37,0.59);
+  var hh=Math.floor(stats.elapsed/3600),mm=Math.floor((stats.elapsed%3600)/60),ss=stats.elapsed%60;
+  addT('Temps total : '+fmtDur(stats.totalMs)+' | Chrono ecoule : '+hh+'h'+String(mm).padStart(2,'0')+'min'+String(ss).padStart(2,'0')+'s',9,true);
+  addT('Clavier actif : '+fmtDur(stats.keyMs)+' | Inactivite >30s : '+fmtDur(stats.inactMs)+' | Frappes : '+stats.keyCount,9,false,0.3,0.3,0.3);
+  if(stats.pasteCount===0)addT('Copier-coller : aucun detecte',9,false,0.18,0.48,0.27);
+  else{addT('Copier-coller : '+stats.pasteCount+' occurrence(s)',9,true,0.7,0.1,0.1);stats.pasteDetails.forEach(function(p){addT('  -> '+p.zone+' a '+p.heure,8,false,0.5,0.1,0.1,8);});}
+
+  pages.forEach(function(pg,pi){
+    pg.parts.push('BT /F1 7 Tf 0.5 0.5 0.5 rg '+ML+' 20 Td (TP DUER – Cotation Risques & Plan Prevention | Lycee Vaucanson Grenoble | '+dateStr+' | Page '+(pi+1)+'/'+pages.length+') Tj ET');
+    pg.parts.push('0.7 0.7 0.7 RG 0.5 w '+ML+' 30 m '+(W-MR)+' 30 l S');
+  });
+
+  var objs=[];
+  objs.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj');
+  objs.push('2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj');
+  var pageIds=[],nextId=3;
+  pages.forEach(function(pg){var content=pg.parts.join('\n');var cid=nextId++;var pid=nextId++;pageIds.push(pid);objs.push(cid+' 0 obj\n<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream\nendobj');objs.push(pid+' 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+W+' '+H+']\n/Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> >> >>\n/Contents '+cid+' 0 R >>\nendobj');});
+  objs[1]='2 0 obj\n<< /Type /Pages /Kids ['+pageIds.join(' 0 R ')+' 0 R] /Count '+pages.length+' >>\nendobj';
+  var body='%PDF-1.4\n';var offs=[];
+  objs.forEach(function(o){offs.push(body.length);body+=o+'\n';});
+  var xref='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n';
+  offs.forEach(function(o){xref+=(Array(11).join('0')+o).slice(-10)+' 00000 n \n';});
+  var full=body+xref+'trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R >>\nstartxref\n'+body.length+'\n%%EOF';
+  var fn='TP_DUER_Prevention_'+classe+'_'+(nom+'_'+prenom).replace(/\s+/g,'_')+'.pdf';
+  var blob=new Blob([full],{type:'application/pdf'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=fn;a.click();
+  setTimeout(function(){URL.revokeObjectURL(url);},3000);
+}
+</script>
+</body>
+</html>

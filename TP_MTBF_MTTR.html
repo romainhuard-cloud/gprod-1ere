@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP – MTBF / MTTR | Fiabilité & Maintenabilité | Lycée Vaucanson</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mt:#2e7d32;--mt-clair:#e8f5e9;--mt-mid:#388e3c;
+  --danger:#c0392b;--danger-clair:#fde8e8;
+  --warning:#e67e22;--warning-clair:#fef3e2;
+  --ok:#27ae60;--ok-clair:#d4edda;--ok-fonce:#1a6b3c;
+  --info:#2980b9;--info-clair:#d6eaf8;
+  --gris:#8a9bac;--gris-clair:#e8ecf0;--gris-tres-clair:#f4f6f8;
+  --texte:#2c3e50;--radius:10px;--shadow:0 4px 16px rgba(44,62,80,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;background:var(--gris-tres-clair);color:var(--texte);min-height:100vh;}
+
+header{
+  background:
+    linear-gradient(135deg,rgba(46,125,50,0.93) 0%,rgba(10,30,15,0.90) 100%),
+    url("https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1400&q=80") center center/cover no-repeat;
+  color:#fff;padding:16px 28px;display:flex;align-items:center;gap:20px;
+  box-shadow:0 4px 22px rgba(0,0,0,.30);position:sticky;top:0;z-index:1000;
+}
+header img.logo{height:68px;border-radius:8px;background:#fff;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+.header-text h1{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;line-height:1.2;}
+.header-text p{font-size:.82rem;opacity:.85;margin-top:2px;}
+.header-right{margin-left:auto;display:flex;gap:10px;align-items:flex-start;}
+.header-machine{flex:1;display:flex;align-items:center;justify-content:center;}
+.header-machine span{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.4);opacity:0.95;text-align:center;}
+.hbox{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 14px;text-align:center;}
+.hbox-label{font-size:.68rem;opacity:.8;text-transform:uppercase;letter-spacing:1px;}
+#timer{font-family:'Barlow Condensed',monospace;font-size:1.75rem;font-weight:700;letter-spacing:2px;}
+#timer.urgent{color:#ffcc00;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.progress-section{background:#fff;padding:13px 28px;border-bottom:2px solid var(--gris-clair);box-shadow:0 2px 8px rgba(0,0,0,.08);position:sticky;top:101px;z-index:999;}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:7px;font-size:.8rem;color:var(--gris);font-weight:600;}
+.progress-bar-track{background:var(--gris-clair);border-radius:20px;height:13px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--mt),var(--mt-mid));transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;}
+.progress-milestones{display:flex;justify-content:space-between;margin-top:7px;}
+.milestone{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.68rem;color:var(--gris);font-weight:600;transition:color .3s;}
+.milestone-dot{width:11px;height:11px;border-radius:50%;background:var(--gris-clair);border:2px solid var(--gris);transition:all .3s;}
+.milestone.done .milestone-dot{background:var(--mt);border-color:#1b5e20;}
+.milestone.done{color:var(--mt);}
+
+.container{max-width:960px;margin:0 auto;padding:28px 18px 60px;}
+
+.eleve-box{background:#fff;border-radius:var(--radius);padding:18px 22px;margin-bottom:22px;box-shadow:var(--shadow);border-left:5px solid var(--mt);display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;}
+.eleve-box .form-group{flex:1;min-width:180px;}
+.eleve-box label{display:block;font-size:.76rem;font-weight:700;color:var(--gris);margin-bottom:4px;text-transform:uppercase;}
+.eleve-box input,.eleve-box select{width:100%;padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.95rem;font-family:'Barlow',sans-serif;background:#fff;}
+.eleve-box input:focus,.eleve-box select:focus{outline:none;border-color:var(--mt);}
+.field-error{border-color:#e74c3c!important;background:#fff5f5!important;animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.required-hint{display:none;color:#e74c3c;font-size:.72rem;font-weight:700;margin-top:3px;}
+.required-hint.show{display:block;}
+.eleve-box label .req{color:#e74c3c;margin-left:2px;}
+
+.video-bloc{background:#fff;border-radius:var(--radius);margin-bottom:26px;box-shadow:var(--shadow);overflow:hidden;border:3px solid var(--mt);}
+.video-header{background:linear-gradient(135deg,#1b5e20,var(--mt));color:#fff;padding:14px 22px;display:flex;align-items:center;gap:14px;}
+.video-header-icon{font-size:1.6rem;flex-shrink:0;}
+.video-header-text h3{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.video-header-text p{font-size:.78rem;opacity:.85;margin-top:2px;}
+.video-header-badge{margin-left:auto;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 14px;font-size:.75rem;font-weight:700;white-space:nowrap;letter-spacing:.5px;}
+.video-body{padding:20px 22px;}
+.video-consigne{background:var(--mt-clair);border:2px solid var(--mt-mid);border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:.88rem;line-height:1.7;}
+.video-consigne strong{color:var(--mt);}
+.video-consigne ol{margin:8px 0 0 18px;display:flex;flex-direction:column;gap:4px;}
+.video-wrapper{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;box-shadow:0 4px 20px rgba(0,0,0,.25);}
+.video-wrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:10px;}
+.video-checklist{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.video-check-item{background:var(--gris-tres-clair);border:1px solid var(--gris-clair);border-radius:8px;padding:7px 12px;font-size:.82rem;display:flex;align-items:center;gap:7px;cursor:pointer;transition:all .2s;user-select:none;}
+.video-check-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--mt);}
+.video-check-item:has(input:checked){background:var(--ok-clair);border-color:var(--ok);color:var(--ok-fonce);}
+.video-start-btn{width:100%;margin-top:14px;padding:12px;background:linear-gradient(135deg,#1b5e20,var(--mt));color:#fff;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.video-start-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 16px rgba(46,125,50,.3);}
+.video-start-btn:disabled{background:var(--gris);cursor:not-allowed;transform:none;box-shadow:none;}
+
+.intro-box{background:#fff;border-radius:var(--radius);padding:22px 26px;margin-bottom:26px;box-shadow:var(--shadow);border-left:5px solid var(--mt);}
+.intro-box h2{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;color:var(--mt);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.intro-box p{font-size:.93rem;line-height:1.6;color:#555;margin-bottom:7px;}
+
+.mt-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+.mt-step{border-radius:10px;padding:13px 10px;text-align:center;border:2px solid;}
+.mt-step.t1{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.mt-step.t2{background:#e3f2fd;border-color:#1565c0;color:#0d47a1;}
+.mt-step.t3{background:#fff3e0;border-color:#e65100;color:#bf360c;}
+.mt-step-num{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;display:block;}
+.mt-step-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin:4px 0 3px;}
+.mt-step-desc{font-size:.7rem;line-height:1.4;opacity:.85;}
+
+.situation-box{background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%);color:#fff;border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;box-shadow:var(--shadow);}
+.situation-box h3{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:10px;letter-spacing:.5px;}
+.situation-box p{font-size:.9rem;line-height:1.6;opacity:.92;}
+.situation-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;}
+.kpi{background:rgba(255,255,255,.18);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,.25);}
+.kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:800;display:block;}
+.kpi-label{font-size:.68rem;opacity:.85;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;display:block;}
+
+.section-block{background:#fff;border-radius:var(--radius);padding:0;margin-bottom:22px;box-shadow:var(--shadow);overflow:hidden;}
+.section-header{color:#fff;padding:13px 22px;display:flex;align-items:center;gap:12px;}
+.section-header.s1{background:linear-gradient(135deg,#1b5e20,#2e7d32);}
+.section-header.s2{background:linear-gradient(135deg,#003570,#01579b);}
+.section-header.s3{background:linear-gradient(135deg,#4a0072,#7b1fa2);}
+.section-header.s4{background:linear-gradient(135deg,#7f0000,#c62828);}
+.section-header.s5{background:linear-gradient(135deg,#4a4000,#f39c12);}
+.section-number{background:rgba(255,255,255,.25);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0;}
+.section-title-block h2{font-family:'Barlow Condensed',sans-serif;font-size:1.08rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.section-title-block p{font-size:.75rem;opacity:.85;margin-top:2px;}
+.section-body{padding:20px 22px;}
+
+.question-block{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--gris-clair);}
+.question-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.question-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--mt);margin-bottom:5px;}
+.competence-tag{display:inline-block;background:var(--mt-clair);color:var(--mt);font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:12px;margin-left:6px;text-transform:uppercase;}
+.question-text{font-size:.95rem;line-height:1.6;color:var(--texte);margin-bottom:12px;font-weight:500;}
+.context-box{background:var(--gris-tres-clair);border:1px solid var(--gris-clair);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;line-height:1.5;color:#555;}
+.context-box strong{color:var(--mt);}
+.info-box{background:var(--mt-clair);border:2px solid var(--mt-mid);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;line-height:1.6;}
+.info-box strong{color:var(--mt);}
+.warning-box{background:var(--warning-clair);border:2px solid var(--warning);border-radius:8px;padding:11px 14px;margin-bottom:12px;font-size:.84rem;line-height:1.5;}
+.warning-box strong{color:#a85200;}
+
+.options-list{display:flex;flex-direction:column;gap:7px;}
+.option-item{display:flex;align-items:center;gap:11px;padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;cursor:pointer;transition:all .2s;font-size:.89rem;}
+.option-item:hover{border-color:var(--mt-mid);background:var(--mt-clair);}
+.option-item input[type=radio]{width:17px;height:17px;accent-color:var(--mt);cursor:pointer;flex-shrink:0;}
+.option-item.correct{border-color:var(--ok);background:var(--ok-clair);}
+.option-item.incorrect{border-color:var(--danger);background:var(--danger-clair);}
+
+.text-input{width:100%;padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.93rem;font-family:'Barlow',sans-serif;transition:border-color .2s;resize:vertical;}
+.text-input:focus{outline:none;border-color:var(--mt);}
+.text-input.correct{border-color:var(--ok);background:var(--ok-clair);}
+.number-input-wrap{display:flex;align-items:center;gap:9px;margin-top:8px;}
+.number-input{width:130px;padding:9px 12px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.98rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-align:center;transition:border-color .2s;}
+.number-input:focus{outline:none;border-color:var(--mt);}
+.number-input.correct{border-color:var(--ok);background:var(--ok-clair);}
+.number-input.incorrect{border-color:var(--danger);background:var(--danger-clair);}
+.unit-label{font-size:.88rem;color:var(--gris);}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem;margin-bottom:8px;}
+.tbl th{background:var(--mt);color:#fff;padding:9px 11px;text-align:left;font-weight:700;font-size:.8rem;}
+.tbl td{padding:8px 11px;border-bottom:1px solid var(--gris-clair);vertical-align:middle;}
+.tbl tr:nth-child(even) td{background:var(--gris-tres-clair);}
+.tbl select{width:100%;padding:5px 9px;border:1.5px solid var(--gris-clair);border-radius:6px;font-size:.86rem;font-family:'Barlow',sans-serif;background:#fff;}
+.tbl select.correct{border-color:var(--ok);background:var(--ok-clair);}
+.tbl select.incorrect{border-color:var(--danger);background:var(--danger-clair);}
+
+.validate-btn{margin-top:11px;padding:8px 20px;background:var(--mt);color:#fff;border:none;border-radius:8px;font-family:'Barlow',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
+.validate-btn:hover{background:#1b5e20;transform:translateY(-1px);}
+.validate-btn:disabled{background:var(--gris);cursor:not-allowed;transform:none;}
+
+.feedback{display:none;margin-top:9px;padding:9px 13px;border-radius:8px;font-size:.86rem;font-weight:500;align-items:flex-start;gap:7px;}
+.feedback.show{display:flex;}
+.feedback.ok{background:var(--ok-clair);color:var(--ok-fonce);border:1px solid var(--ok);}
+.feedback.nok{background:var(--danger-clair);color:var(--danger);border:1px solid var(--danger);}
+.feedback-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.feedback-content{line-height:1.5;}
+
+/* Chronologie pannes */
+.panne-timeline{display:flex;gap:4px;align-items:flex-end;margin:14px 0;flex-wrap:wrap;}
+.panne-block{border-radius:6px;padding:5px 7px;text-align:center;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.panne-ok{background:#e8f5e9;border:2px solid #2e7d32;color:#1b5e20;}
+.panne-ko{background:#ffebee;border:2px solid #c62828;color:#7f0000;}
+
+.voir-note-btn{text-align:center;margin-top:22px;}
+.voir-note-btn button{padding:12px 28px;background:var(--mt);color:#fff;border:none;border-radius:8px;font-family:'Barlow',sans-serif;font-size:.98rem;font-weight:700;cursor:pointer;}
+.voir-note-btn button:hover{background:#1b5e20;}
+.final-section{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);text-align:center;border:3px solid var(--mt);margin-top:24px;}
+.final-section h2{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;color:var(--mt);margin-bottom:8px;}
+.final-note{font-size:3rem;font-weight:800;font-family:'Barlow Condensed',sans-serif;color:var(--mt);margin:12px 0;display:none;}
+.comp-summary{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:14px 0;}
+.send-btn{margin:8px;padding:13px 28px;background:linear-gradient(135deg,#1b5e20,var(--mt));color:#fff;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(46,125,50,.3);letter-spacing:.5px;}
+.send-btn:hover{transform:translateY(-2px);}
+.send-btn.pdf-btn{background:linear-gradient(135deg,#154360,#2980b9);}
+#send-status{margin-top:12px;font-size:.88rem;color:var(--gris);font-style:italic;}
+#send-status.success{color:var(--ok-fonce);font-style:normal;font-weight:600;}
+
+@media(max-width:640px){
+  header{flex-wrap:wrap;padding:12px 14px;}
+  .mt-steps{grid-template-columns:1fr 1fr;}
+  .situation-kpis{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img class="logo" src="https://services.ard.fr/fileadmin/users/grenoble-vaucanson/logo.jpg" alt="Lycée Vaucanson" onerror="this.style.display='none'">
+  <div class="header-text">
+    <h1>TP – MTBF / MTTR | Fiabilité & Maintenabilité</h1>
+    <p>BAC PRO PLP &nbsp;·&nbsp; CAP CIP</p>
+    <p>Lycée Polyvalent Vaucanson – Grenoble</p>
+  </div>
+  <div class="header-machine">
+    <span>🔧 MTBF / MTTR<br><span style="font-size:.95rem;font-weight:600;letter-spacing:1px;">Fiabilité & Maintenance</span></span>
+  </div>
+  <div class="header-right">
+    <div class="hbox">
+      <div class="hbox-label">⏱ Temps restant</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div id="timer">2:00:00</div>
+        <button id="pause-btn" onclick="togglePause()" title="Pause/Reprendre" style="background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);border-radius:6px;color:#fff;font-size:1rem;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏸</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="progress-section">
+  <div class="progress-header">
+    <span>Avancement du TP</span>
+    <span id="progress-text">0 / 40 questions validées</span>
+  </div>
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <div class="progress-milestones">
+    <div class="milestone" id="m1"><div class="milestone-dot"></div>Bases (10)</div>
+    <div class="milestone" id="m2"><div class="milestone-dot"></div>Calculs (20)</div>
+    <div class="milestone" id="m3"><div class="milestone-dot"></div>Indicateurs (28)</div>
+    <div class="milestone" id="m4"><div class="milestone-dot"></div>Plan (35)</div>
+    <div class="milestone" id="m5"><div class="milestone-dot"></div>Terminé ✓</div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="eleve-box">
+  <div class="form-group"><label>Nom <span class="req">*</span></label><input type="text" id="eleve-nom" placeholder="Votre nom...">
+    <div class="required-hint" id="hint-nom">⚠ Le nom est obligatoire</div></div>
+  <div class="form-group"><label>Prénom <span class="req">*</span></label><input type="text" id="eleve-prenom" placeholder="Votre prénom...">
+    <div class="required-hint" id="hint-prenom">⚠ Le prénom est obligatoire</div></div>
+  <div class="form-group">
+    <label>Classe <span class="req">*</span></label>
+    <select id="eleve-classe">
+      <option value="">-- Sélectionnez --</option>
+      <option>2PMIA1</option><option>2PMIA2</option><option>2PMIA3</option>
+      <option>2PMIA4</option><option>2PMIA5</option><option>1PLP</option>
+      <option>TPLP</option><option>1CIP G1</option><option>1CIP G2</option>
+      <option>2CIP G1</option><option>2CIP G2</option><option>GRETA</option>
+    </select>
+    <div class="required-hint" id="hint-classe">⚠ La classe est obligatoire</div>
+  </div>
+</div>
+
+<div class="video-bloc" id="video-block">
+  <div class="video-header">
+    <div class="video-header-icon">🎬</div>
+    <div class="video-header-text">
+      <h3>Étape 1 — Visionner la vidéo avant de commencer</h3>
+      <p>À regarder avant de commencer le TP &nbsp;·&nbsp; Source : Tube Enseignement Professionnel</p>
+    </div>
+    <div class="video-header-badge">📌 Obligatoire</div>
+  </div>
+  <div class="video-body">
+    <div class="video-consigne">
+      <strong>📋 Consigne :</strong> Regardez attentivement la vidéo sur le MTBF, le MTTR et la disponibilité des équipements. Prenez des notes. Cochez chaque point clé après l'avoir compris, puis cliquez sur le bouton pour accéder aux questions.
+      <ol>
+        <li>Retenez les définitions du <strong>MTBF</strong> (Mean Time Between Failures) et du <strong>MTTR</strong> (Mean Time To Repair)</li>
+        <li>Comprenez les formules de calcul du MTBF, du MTTR et de la <strong>disponibilité intrinsèque</strong></li>
+        <li>Mémorisez la différence entre <strong>fiabilité</strong> (MTBF) et <strong>maintenabilité</strong> (MTTR)</li>
+        <li>Observez comment exploiter un <strong>historique de pannes</strong> pour calculer ces indicateurs et proposer un plan d'action</li>
+      </ol>
+    </div>
+    <div class="video-wrapper">
+      <iframe
+        title="MTBF et MTTR"
+        src="https://tube-enseignement-professionnel.apps.education.fr/videos/embed/8kR6vRDPxBiwbkRsERAAp9?title=0&warningTitle=0&controlBar=1&peertubeLink=0&p2p=0"
+        allowfullscreen
+        sandbox="allow-same-origin allow-scripts allow-popups"
+        loading="lazy">
+      </iframe>
+    </div>
+    <div class="video-checklist">
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je sais définir le MTBF et le MTTR avec leurs unités</label>
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je maîtrise les formules de calcul du MTBF, MTTR et de la disponibilité</label>
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je comprends la différence entre fiabilité et maintenabilité</label>
+      <label class="video-check-item"><input type="checkbox" class="vcheck" onchange="checkVideo()"> Je sais exploiter un historique de pannes pour calculer ces indicateurs</label>
+    </div>
+    <button class="video-start-btn" id="video-start-btn" onclick="deverrouillerTP()" disabled>
+      🔒 Cochez tous les points clés pour débloquer le TP
+    </button>
+  </div>
+</div>
+
+<div id="tp-content" style="pointer-events:none;opacity:.4;user-select:none;filter:blur(1.5px);">
+
+<div class="intro-box">
+  <h2>🔧 Qu'est-ce que le MTBF et le MTTR ?</h2>
+  <p>Le <strong>MTBF</strong> (Mean Time Between Failures – Temps Moyen Entre Pannes) est l'indicateur de <strong>fiabilité</strong> d'un équipement : il mesure la durée moyenne de bon fonctionnement entre deux pannes consécutives. Plus le MTBF est élevé, plus la machine est fiable.</p>
+  <p>Le <strong>MTTR</strong> (Mean Time To Repair – Temps Moyen de Réparation) est l'indicateur de <strong>maintenabilité</strong> : il mesure la durée moyenne nécessaire pour remettre la machine en état de marche après une panne. Plus le MTTR est faible, plus la maintenance est efficace.</p>
+  <div class="mt-steps">
+    <div class="mt-step t1">
+      <span class="mt-step-num">📈</span>
+      <span class="mt-step-title">MTBF</span>
+      <span class="mt-step-desc">Temps total de bon fonctionnement ÷ Nombre de pannes. Indicateur de fiabilité.</span>
+    </div>
+    <div class="mt-step t2">
+      <span class="mt-step-num">🔧</span>
+      <span class="mt-step-title">MTTR</span>
+      <span class="mt-step-desc">Temps total de réparation ÷ Nombre de pannes. Indicateur de maintenabilité.</span>
+    </div>
+    <div class="mt-step t3">
+      <span class="mt-step-num">✅</span>
+      <span class="mt-step-title">Disponibilité</span>
+      <span class="mt-step-desc">Di = MTBF / (MTBF + MTTR). Probabilité que la machine soit en état de fonctionner.</span>
+    </div>
+  </div>
+  <p style="font-size:.84rem;color:#777;">💡 La <strong>disponibilité intrinsèque</strong> (Di) est comprise entre 0 et 1 (ou 0 % et 100 %). Elle représente la proportion du temps pendant laquelle l'équipement est opérationnel. Une machine avec MTBF = 40 h et MTTR = 2 h a une Di = 40/(40+2) = 95,2 %.</p>
+</div>
+
+<div class="situation-box">
+  <h3>🏭 Mise en situation – Tour CNC Mazak, Atelier Usinage, Lycée Vaucanson</h3>
+  <p>Vous êtes technicien de maintenance sur le <strong>tour CNC Mazak QT-300</strong> de l'atelier d'usinage du lycée Vaucanson. Votre responsable vous demande d'analyser l'historique des pannes du dernier semestre (26 semaines) pour calculer les indicateurs de fiabilité et de maintenabilité, évaluer la disponibilité de la machine et proposer un plan d'amélioration de la maintenance préventive.</p>
+  <div class="situation-kpis">
+    <div class="kpi"><span class="kpi-val">8</span><span class="kpi-label">Pannes sur 26 sem.</span></div>
+    <div class="kpi"><span class="kpi-val">960 h</span><span class="kpi-label">Temps d'ouverture total</span></div>
+    <div class="kpi"><span class="kpi-val">36 h</span><span class="kpi-label">Temps total de réparation</span></div>
+    <div class="kpi"><span class="kpi-val">Mazak CNC</span><span class="kpi-label">Machine concernée</span></div>
+  </div>
+</div>
+
+<!-- Historique des pannes -->
+<div class="section-block">
+  <div class="section-header s1">
+    <div class="section-number">📋</div>
+    <div class="section-title-block">
+      <h2>Historique des pannes – Tour CNC Mazak QT-300</h2>
+      <p>Semestre 1 – Relevé du carnet de maintenance (26 semaines, 37 h/semaine)</p>
+    </div>
+  </div>
+  <div class="section-body">
+    <!-- Frise chronologique visuelle -->
+    <div class="panne-timeline">
+      <div class="panne-block panne-ok" style="width:80px;">Sem. 1-3<br>✅ 111 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P1<br>🔴 3h</div>
+      <div class="panne-block panne-ok" style="width:70px;">Sem. 4-5<br>✅ 74 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P2<br>🔴 5h</div>
+      <div class="panne-block panne-ok" style="width:60px;">Sem. 6-8<br>✅ 111 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P3<br>🔴 2h</div>
+      <div class="panne-block panne-ok" style="width:50px;">Sem. 9-10<br>✅ 74 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P4<br>🔴 6h</div>
+      <div class="panne-block panne-ok" style="width:60px;">Sem. 11-13<br>✅ 111 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P5<br>🔴 4h</div>
+      <div class="panne-block panne-ok" style="width:50px;">Sem. 14-15<br>✅ 74 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P6<br>🔴 8h</div>
+      <div class="panne-block panne-ok" style="width:50px;">Sem. 16-18<br>✅ 111 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P7<br>🔴 4h</div>
+      <div class="panne-block panne-ok" style="width:50px;">Sem. 19-21<br>✅ 111 h</div>
+      <div class="panne-block panne-ko" style="width:40px;">P8<br>🔴 4h</div>
+      <div class="panne-block panne-ok" style="width:50px;">Sem. 22-26<br>✅ 183 h</div>
+    </div>
+    <div style="overflow-x:auto;margin-top:14px;">
+      <table class="tbl">
+        <thead>
+          <tr><th style="width:40px;">Panne</th><th>Cause identifiée</th><th style="width:100px;">Type</th><th style="width:120px;">Durée réparation</th><th style="width:140px;">Temps de bon fonct. avant panne</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P1</td><td>Rupture de courroie de broche</td><td><span style="background:#fff3e0;color:#bf360c;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Mécanique</span></td><td style="text-align:center;font-weight:700;">3 h</td><td style="text-align:center;">111 h</td></tr>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P2</td><td>Défaut capteur de position tourelle</td><td><span style="background:#e3f2fd;color:#0d47a1;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Électrique</span></td><td style="text-align:center;font-weight:700;">5 h</td><td style="text-align:center;">74 h</td></tr>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P3</td><td>Fuite huile pompe hydraulique</td><td><span style="background:#fff3e0;color:#bf360c;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Mécanique</span></td><td style="text-align:center;font-weight:700;">2 h</td><td style="text-align:center;">111 h</td></tr>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P4</td><td>Défaut variateur de fréquence broche</td><td><span style="background:#e3f2fd;color:#0d47a1;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Électrique</span></td><td style="text-align:center;font-weight:700;">6 h</td><td style="text-align:center;">74 h</td></tr>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P5</td><td>Rupture de courroie de broche (récidive)</td><td><span style="background:#fff3e0;color:#bf360c;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Mécanique</span></td><td style="text-align:center;font-weight:700;">4 h</td><td style="text-align:center;">111 h</td></tr>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P6</td><td>Panne automate – perte programme CN</td><td><span style="background:#f3e5f5;color:#4a0072;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Informatique</span></td><td style="text-align:center;font-weight:700;">8 h</td><td style="text-align:center;">74 h</td></tr>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P7</td><td>Usure mandrin – vibrations excessives</td><td><span style="background:#fff3e0;color:#bf360c;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Mécanique</span></td><td style="text-align:center;font-weight:700;">4 h</td><td style="text-align:center;">111 h</td></tr>
+          <tr><td style="text-align:center;font-weight:800;color:#c62828;">P8</td><td>Défaut capteur température lubrification</td><td><span style="background:#e3f2fd;color:#0d47a1;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:8px;">Électrique</span></td><td style="text-align:center;font-weight:700;">4 h</td><td style="text-align:center;">111 h</td></tr>
+          <tr style="font-weight:700;background:#e8f5e9;">
+            <td colspan="3" style="text-align:right;padding-right:20px;">TOTAUX :</td>
+            <td style="text-align:center;color:#1b5e20;">36 h de réparation</td>
+            <td style="text-align:center;color:#1b5e20;">777 h de bon fonct.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.78rem;color:#888;margin-top:8px;">Temps d'ouverture total = 26 semaines × 37 h/semaine = 962 h ≈ 960 h (arrondis) | Temps de bon fonctionnement = 960 − 36 = 924 h réels<br>
+    Note pédagogique : le tableau donne 777 h de bon fonctionnement entre pannes (sommes des intervalles) ; le temps total de bon fonctionnement sur la période est 960 − 36 = 924 h.</p>
+  </div>
+</div>
+
+<!-- ========== Partie 1 – Bases du MTBF, MTTR et disponibilité ========== -->
+<div class="section-block">
+  <div class="section-header s1">
+    <div class="section-number">📚</div>
+    <div class="section-title-block">
+      <h2>Partie 1 – Bases du MTBF, MTTR et disponibilité</h2>
+      <p>Comprendre les définitions et formules fondamentales | Q1 à Q10</p>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="question-block" id="qb1">
+      <div class="question-label">Question 1 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Que mesure le <strong>MTBF</strong> (Mean Time Between Failures) et à quel aspect de la maintenance correspond-il ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q1" value="a"> Le temps total pendant lequel la machine est disponible sur une période de production donnée</label>
+        <label class="option-item"><input type="radio" name="q1" value="b"> Le temps moyen nécessaire pour réparer une panne — il mesure l'efficacité de l'équipe de maintenance</label>
+        <label class="option-item"><input type="radio" name="q1" value="c"> Le temps moyen de bon fonctionnement entre deux pannes consécutives — il mesure la <strong>fiabilité</strong> de l'équipement</label>
+        <label class="option-item"><input type="radio" name="q1" value="d"> Le temps moyen entre deux interventions de maintenance préventive planifiées sur l'équipement</label>
+      </div>
+      <button class="validate-btn" onclick="val(1)">✔ Valider</button>
+      <div class="feedback" id="fb1"></div>
+    </div>
+    <div class="question-block" id="qb2">
+      <div class="question-label">Question 2 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Quelle est la <strong>formule de calcul du MTBF</strong> à partir d'un historique de pannes ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q2" value="a"> MTBF = Nombre de pannes / Temps total de production — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q2" value="b"> MTBF = Temps total de réparation / Nombre de pannes</label>
+        <label class="option-item"><input type="radio" name="q2" value="c"> MTBF = Temps total de bon fonctionnement / Nombre de pannes</label>
+        <label class="option-item"><input type="radio" name="q2" value="d"> MTBF = (Temps total d'ouverture − Temps d'arrêt préventif) / Nombre d'interventions</label>
+      </div>
+      <button class="validate-btn" onclick="val(2)">✔ Valider</button>
+      <div class="feedback" id="fb2"></div>
+    </div>
+    <div class="question-block" id="qb3">
+      <div class="question-label">Question 3 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Quelle est la <strong>formule de la disponibilité intrinsèque (Di)</strong> d'un équipement ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q3" value="a"> Di = MTTR / (MTBF + MTTR)</label>
+        <label class="option-item"><input type="radio" name="q3" value="b"> Di = (MTBF − MTTR) / MTBF (approximation qui ne correspond pas à la réalité du terrain)</label>
+        <label class="option-item"><input type="radio" name="q3" value="c"> Di = MTBF × MTTR / (MTBF + MTTR)</label>
+        <label class="option-item"><input type="radio" name="q3" value="d"> Di = MTBF / (MTBF + MTTR)</label>
+      </div>
+      <button class="validate-btn" onclick="val(3)">✔ Valider</button>
+      <div class="feedback" id="fb3"></div>
+    </div>
+    <div class="question-block" id="qb4">
+      <div class="question-label">Question 4 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Un technicien affirme : <em>« Notre machine est très maintenable car son MTBF est de 200 heures. »</em> Que lui répondez-vous ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q4" value="a"> Il a raison : un MTBF élevé signifie que la machine tombe rarement en panne, ce qui facilite le travail de maintenance</label>
+        <label class="option-item"><input type="radio" name="q4" value="b"> Il a tort : un MTBF de 200 heures est trop faible pour qualifier une machine de maintenable</label>
+        <label class="option-item"><input type="radio" name="q4" value="c"> Il confond fiabilité et maintenabilité : le MTBF mesure la <strong>fiabilité</strong> (fréquence des pannes), pas la maintenabilité. C'est le <strong>MTTR</strong> qui mesure la maintenabilité (facilité et rapidité de réparation)</label>
+        <label class="option-item"><input type="radio" name="q4" value="d"> Il a raison partiellement : le MTBF mesure la maintenabilité mais uniquement pour les machines à commande numérique</label>
+      </div>
+      <button class="validate-btn" onclick="val(4)">✔ Valider</button>
+      <div class="feedback" id="fb4"></div>
+    </div>
+    <div class="question-block" id="qb5">
+      <div class="question-label">Question 5 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Parmi ces actions, laquelle permet d'améliorer le <strong>MTBF</strong> d'une machine (augmenter sa fiabilité) ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q5" value="a"> Réduire la cadence de production pour diminuer l'usure des composants mécaniques (une solution qui ne traite pas la cause réelle du problème) (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q5" value="b"> Stocker des pièces de rechange à proximité de la machine pour réduire les délais d'approvisionnement — cette option ne respecte pas les règles de la démarche présentée — un choix qui ne règle pas durablement la situation observée</label>
+        <label class="option-item"><input type="radio" name="q5" value="c"> Former les techniciens de maintenance pour qu'ils réparent plus rapidement lors des pannes — ce choix ne correspond pas à la méthode ou à la définition attendue ici (approximation qui ne correspond pas à la réalité du terrain)</label>
+        <label class="option-item"><input type="radio" name="q5" value="d"> Mettre en place une maintenance préventive régulière (remplacement des pièces d'usure avant défaillance, lubrification, nettoyage) pour éviter les pannes</label>
+      </div>
+      <button class="validate-btn" onclick="val(5)">✔ Valider</button>
+      <div class="feedback" id="fb5"></div>
+    </div>
+    <div class="question-block" id="qb6">
+      <div class="question-label">Question 6 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Que signifie le sigle <strong>MTTR</strong> et que mesure-t-il exactement ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q6" value="a"> Mean Time To Repair – le temps moyen pour réparer une panne (mesure la <strong>maintenabilité</strong>)</label>
+        <label class="option-item"><input type="radio" name="q6" value="b"> Mean Total Time to Repair – le coût horaire moyen d'une intervention de maintenance</label>
+        <label class="option-item"><input type="radio" name="q6" value="c"> Maximum Time To Run – le temps maximal de fonctionnement avant maintenance obligatoire</label>
+        <label class="option-item"><input type="radio" name="q6" value="d"> Machine Time To Reset – le temps de redémarrage d'une machine après arrêt programmé</label>
+      </div>
+      <button class="validate-btn" onclick="val(6)">✔ Valider</button>
+      <div class="feedback" id="fb6"></div>
+    </div>
+    <div class="question-block" id="qb7">
+      <div class="question-label">Question 7 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Parmi ces actions, laquelle permet de <strong>réduire le MTTR</strong> (améliorer la maintenabilité) d'une machine ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q7" value="a"> Multiplier les contrôles préventifs pour anticiper les pannes — cette option ne respecte pas les règles de la démarche présentée — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q7" value="b"> Avoir un stock local de pièces de rechange + des modes opératoires illustrés au poste + une formation des techniciens à l'auto-diagnostic</label>
+        <label class="option-item"><input type="radio" name="q7" value="c"> Augmenter la durée de vie des composants en réduisant les contraintes mécaniques (une solution qui ne traite pas la cause réelle du problème) (approximation qui ne correspond pas à la réalité du terrain)</label>
+        <label class="option-item"><input type="radio" name="q7" value="d"> Acheter une machine de meilleure qualité chez un constructeur réputé — une piste qui n'apporte pas de réponse complète à la question posée (une réponse plausible à première vue mais qui ne convient pas ici)</label>
+      </div>
+      <button class="validate-btn" onclick="val(7)">✔ Valider</button>
+      <div class="feedback" id="fb7"></div>
+    </div>
+    <div class="question-block" id="qb8">
+      <div class="question-label">Question 8 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">En maintenance industrielle, on parle souvent de <strong>FMD</strong> ou <strong>FMDS</strong>. Quelle est la bonne correspondance ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q8" value="a"> Fonction – Méthode – Dispositif – Sécurité (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q8" value="b"> Force – Moment – Direction – Stabilité — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q8" value="c"> Fréquence – Mouvement – Distance – Sécurité (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q8" value="d"> Fiabilité (MTBF) – Maintenabilité (MTTR) – Disponibilité (Di) – Sécurité</label>
+      </div>
+      <button class="validate-btn" onclick="val(8)">✔ Valider</button>
+      <div class="feedback" id="fb8"></div>
+    </div>
+    <div class="question-block" id="qb9">
+      <div class="question-label">Question 9 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Quelle est la <strong>différence fondamentale</strong> entre la disponibilité <strong>intrinsèque (Di)</strong> et la disponibilité <strong>opérationnelle (Do)</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q9" value="a"> La Di ne tient compte que des pannes correctives (MTBF/MTTR purs) ; la Do intègre tous les arrêts non productifs (pannes + maintenance préventive + changements + micro-arrêts)</label>
+        <label class="option-item"><input type="radio" name="q9" value="b"> Aucune, les deux indicateurs mesurent exactement la même chose avec des formules différentes — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q9" value="c"> La Di s'applique aux machines neuves et la Do aux machines de plus de 5 ans — une piste qui n'apporte pas de réponse complète à la question posée (confusion fréquente qu'il convient d'éviter)</label>
+        <label class="option-item"><input type="radio" name="q9" value="d"> La Di est calculée par le constructeur et la Do par l'opérateur sur le terrain — un choix qui ne règle pas durablement la situation observée — une approche qui s'écarte de la méthode étudiée en cours</label>
+      </div>
+      <button class="validate-btn" onclick="val(9)">✔ Valider</button>
+      <div class="feedback" id="fb9"></div>
+    </div>
+    <div class="question-block" id="qb10">
+      <div class="question-label">Question 10 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Comment les indicateurs <strong>MTBF, MTTR et Di</strong> se relient-ils au <strong>TRS</strong> (Taux de Rendement Synthétique) ? (Cochez les 3 bonnes affirmations)</div>
+      <div class="options-list">
+        <label class="option-item"><input type="checkbox" name="q10" value="a"> La disponibilité intrinsèque Di entre dans le calcul du TRS (composante 'Disponibilité')</label>
+        <label class="option-item"><input type="checkbox" name="q10" value="b"> Un MTBF élevé contribue à un meilleur TRS car il y a moins de pannes (= plus de temps de marche)</label>
+        <label class="option-item"><input type="checkbox" name="q10" value="c"> Un MTTR élevé pénalise directement le TRS car les réparations sont longues</label>
+        <label class="option-item"><input type="checkbox" name="q10" value="d"> MTBF et MTTR n'ont aucun rapport avec le TRS, ce sont des indicateurs séparés</label>
+        <label class="option-item"><input type="checkbox" name="q10" value="e"> Le TRS = MTBF × MTTR mathématiquement</label>
+      </div>
+      <button class="validate-btn" onclick="val(10)">✔ Valider</button>
+      <div class="feedback" id="fb10"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== Partie 2 – Calculs MTBF et MTTR à partir de l'historique ========== -->
+<div class="section-block">
+  <div class="section-header s2">
+    <div class="section-number">🧮</div>
+    <div class="section-title-block">
+      <h2>Partie 2 – Calculs MTBF et MTTR à partir de l'historique</h2>
+      <p>Exploiter le carnet de maintenance du Mazak QT-300 | Q11 à Q20</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="info-box">
+      <strong>📖 Données de référence :</strong> Période = 26 semaines × 37 h = 962 h | Nombre de pannes = 8 | Temps total de réparation = 3+5+2+6+4+8+4+4 = <strong>36 h</strong> | Temps de bon fonctionnement = 962 − 36 = <strong>926 h</strong><br>
+      <em>Pour les calculs, on utilisera : Temps bon fonctionnement = <strong>924 h</strong> (valeur arrondie cohérente avec 960 h d'ouverture − 36 h de réparation)</em>
+    </div>
+    <div class="question-block" id="qb11">
+      <div class="question-label">Question 11 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Calculez le <strong>MTBF du tour CNC Mazak QT-300</strong> sur ce semestre.</div>
+      <div class="context-box"><strong>Formule :</strong> MTBF = Temps total de bon fonctionnement / Nombre de pannes = 924 / 8 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num11" step="0.1" placeholder="0,0">
+        <span class="unit-label">heures (MTBF)</span>
+      </div>
+      <button class="validate-btn" onclick="val(11)">✔ Valider</button>
+      <div class="feedback" id="fb11"></div>
+    </div>
+    <div class="question-block" id="qb12">
+      <div class="question-label">Question 12 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Calculez le <strong>MTTR du tour CNC Mazak QT-300</strong> sur ce semestre.</div>
+      <div class="context-box"><strong>Formule :</strong> MTTR = Temps total de réparation / Nombre de pannes = 36 / 8 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num12" step="0.1" placeholder="0,0">
+        <span class="unit-label">heures (MTTR)</span>
+      </div>
+      <button class="validate-btn" onclick="val(12)">✔ Valider</button>
+      <div class="feedback" id="fb12"></div>
+    </div>
+    <div class="question-block" id="qb13">
+      <div class="question-label">Question 13 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Calculez la <strong>disponibilité intrinsèque (Di)</strong> du tour CNC Mazak QT-300 en pourcentage.</div>
+      <div class="context-box"><strong>Formule :</strong> Di = MTBF / (MTBF + MTTR) × 100 = 115,5 / (115,5 + 4,5) × 100 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num13" step="0.1" placeholder="0,0">
+        <span class="unit-label">% disponibilité</span>
+      </div>
+      <button class="validate-btn" onclick="val(13)">✔ Valider</button>
+      <div class="feedback" id="fb13"></div>
+    </div>
+    <div class="question-block" id="qb14">
+      <div class="question-label">Question 14 <span class="competence-tag">Analyse</span></div>
+      <div class="question-text">Parmi les 8 pannes du semestre, combien sont des pannes de type <strong>mécanique</strong> ?</div>
+      <div class="context-box"><strong>Rappel tableau :</strong> P1=Mécanique | P2=Électrique | P3=Mécanique | P4=Électrique | P5=Mécanique | P6=Informatique | P7=Mécanique | P8=Électrique</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num14" placeholder="0">
+        <span class="unit-label">pannes mécaniques</span>
+      </div>
+      <button class="validate-btn" onclick="val(14)">✔ Valider</button>
+      <div class="feedback" id="fb14"></div>
+    </div>
+    <div class="question-block" id="qb15">
+      <div class="question-label">Question 15 <span class="competence-tag">Analyse</span></div>
+      <div class="question-text">Quelle panne a eu la <strong>durée de réparation la plus longue</strong> et quel est son impact en termes de MTTR individuel ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q15" value="a"> P5 – Rupture de courroie de broche (4 h) car c'est une récidive qui aurait dû être évitée par la maintenance préventive (approximation qui ne correspond pas à la réalité du terrain) — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q15" value="b"> P6 – Panne automate / perte programme CN (8 h) car la restauration du programme et la revalidation de la machine nécessitent le plus de temps — cette panne seule représente 22 % du temps total de réparation</label>
+        <label class="option-item"><input type="radio" name="q15" value="c"> P4 – Défaut variateur de fréquence broche (6 h) car le remplacement d'un variateur est une opération longue et complexe — un choix qui ne règle pas durablement la situation observée (confusion fréquente qu'il convient d'éviter)</label>
+        <label class="option-item"><input type="radio" name="q15" value="d"> P2 – Défaut capteur de position tourelle (5 h) car les pannes électroniques sont toujours les plus longues à diagnostiquer — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème (une solution qui ne traite pas la cause réelle du problème)</label>
+      </div>
+      <button class="validate-btn" onclick="val(15)">✔ Valider</button>
+      <div class="feedback" id="fb15"></div>
+    </div>
+    <div class="question-block" id="qb16">
+      <div class="question-label">Question 16 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Si on exclut la panne P6 (panne exceptionnelle liée à un problème informatique non récurrent), recalculez le <strong>MTTR corrigé</strong> sur les 7 pannes restantes.</div>
+      <div class="context-box"><strong>Données :</strong> Temps réparation sans P6 = 36 − 8 = 28 h | Nombre de pannes = 7<br><strong>Formule :</strong> MTTR corrigé = 28 / 7 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num16" placeholder="0">
+        <span class="unit-label">heures (MTTR corrigé)</span>
+      </div>
+      <button class="validate-btn" onclick="val(16)">✔ Valider</button>
+      <div class="feedback" id="fb16"></div>
+    </div>
+    <div class="question-block" id="qb17">
+      <div class="question-label">Question 17 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Une autre machine de l'atelier (perceuse colonne) a connu <strong>5 pannes</strong> en <strong>1 000 heures de fonctionnement</strong>. Calculez son MTBF.</div>
+      <div class="context-box"><strong>Formule :</strong> MTBF = 1 000 / 5 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num17" placeholder="0">
+        <span class="unit-label">heures (MTBF perceuse)</span>
+      </div>
+      <button class="validate-btn" onclick="val(17)">✔ Valider</button>
+      <div class="feedback" id="fb17"></div>
+    </div>
+    <div class="question-block" id="qb18">
+      <div class="question-label">Question 18 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">La perceuse a eu <strong>5 pannes</strong> totalisant <strong>15 heures de réparation</strong>. Calculez son MTTR.</div>
+      <div class="context-box"><strong>Formule :</strong> MTTR = 15 / 5 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num18" placeholder="0">
+        <span class="unit-label">heures (MTTR perceuse)</span>
+      </div>
+      <button class="validate-btn" onclick="val(18)">✔ Valider</button>
+      <div class="feedback" id="fb18"></div>
+    </div>
+    <div class="question-block" id="qb19">
+      <div class="question-label">Question 19 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Avec MTBF = 200 h et MTTR = 3 h pour la perceuse, calculez sa <strong>disponibilité intrinsèque Di</strong>.</div>
+      <div class="context-box"><strong>Formule :</strong> Di = 200 / (200 + 3) × 100 = 200 / 203 × 100 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num19" step="0.1" placeholder="0,0">
+        <span class="unit-label">% Di perceuse</span>
+      </div>
+      <button class="validate-btn" onclick="val(19)">✔ Valider</button>
+      <div class="feedback" id="fb19"></div>
+    </div>
+    <div class="question-block" id="qb20">
+      <div class="question-label">Question 20 <span class="competence-tag">Analyse</span></div>
+      <div class="question-text">Vous comparez 2 machines : <strong>Tour Mazak</strong> (Di = 96,25 % – MTBF 115,5 h – MTTR 4,5 h) et <strong>Perceuse</strong> (Di = 98,5 % – MTBF 200 h – MTTR 3 h). Pour le Mazak, le levier <strong>prioritaire</strong> à actionner est :</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q20" value="a"> Améliorer le MTTR car il est environ 50 % plus élevé que celui de la perceuse — formation des techniciens, stocks pièces, procédures</label>
+        <label class="option-item"><input type="radio" name="q20" value="b"> Améliorer le MTBF car il est seulement 60 % de celui de la perceuse — maintenance préventive sur les composants critiques (courroies, capteurs)</label>
+        <label class="option-item"><input type="radio" name="q20" value="c"> Augmenter la cadence horaire pour compenser les arrêts — cette option ne respecte pas les règles de la démarche présentée (une solution qui ne traite pas la cause réelle du problème)</label>
+        <label class="option-item"><input type="radio" name="q20" value="d"> Aucune action prioritaire : la disponibilité du Mazak est déjà acceptable (ce choix n'a qu'un effet limité sur le résultat recherché) — un choix qui ne règle pas durablement la situation observée</label>
+      </div>
+      <button class="validate-btn" onclick="val(20)">✔ Valider</button>
+      <div class="feedback" id="fb20"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== Partie 3 – Disponibilité et indicateurs de performance ========== -->
+<div class="section-block">
+  <div class="section-header s3">
+    <div class="section-number">📊</div>
+    <div class="section-title-block">
+      <h2>Partie 3 – Disponibilité et indicateurs de performance</h2>
+      <p>Relier MTBF/MTTR aux indicateurs de production | Q21 à Q28</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="info-box">
+      <strong>📖 Rappel des liens entre indicateurs :</strong><br>
+      <strong>Disponibilité opérationnelle (Do) ≈</strong> Temps de bon fonctionnement / Temps d'ouverture total<br>
+      <strong>Taux de disponibilité (TRS-D) =</strong> (Temps d'ouverture − Arrêts non planifiés) / Temps d'ouverture<br>
+      Un MTBF élevé → moins de pannes → meilleure disponibilité | Un MTTR faible → réparations courtes → pertes minimisées
+    </div>
+    <div class="question-block" id="qb21">
+      <div class="question-label">Question 21 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Calculez le <strong>taux de disponibilité opérationnelle</strong> du tour Mazak sur le semestre, en pourcentage.</div>
+      <div class="context-box"><strong>Formule :</strong> Do = Temps de bon fonctionnement / Temps d'ouverture × 100 = 924 / 960 × 100 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num21" step="0.1" placeholder="0,0">
+        <span class="unit-label">% disponibilité opérationnelle</span>
+      </div>
+      <button class="validate-btn" onclick="val(21)">✔ Valider</button>
+      <div class="feedback" id="fb21"></div>
+    </div>
+    <div class="question-block" id="qb22">
+      <div class="question-label">Question 22 <span class="competence-tag">Analyse</span></div>
+      <div class="question-text">La disponibilité intrinsèque (Di = 96,25 %) est égale à la disponibilité opérationnelle (Do = 96,25 %) ici. Mais en règle générale, quelle est la principale différence entre ces deux indicateurs ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q22" value="a"> La Di est calculée par le constructeur de la machine et la Do est calculée par le technicien de maintenance sur le terrain — ce choix ne correspond pas à la méthode ou à la définition attendue ici — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q22" value="b"> Il n'y a aucune différence : les deux indicateurs mesurent exactement la même chose avec des formules différentes (piste à écarter au vu des éléments du cas étudié) (une réponse plausible à première vue mais qui ne convient pas ici)</label>
+        <label class="option-item"><input type="radio" name="q22" value="c"> La Di est calculée uniquement à partir du MTBF et du MTTR (pannes correctives) ; la Do prend en compte le temps réel de production, incluant aussi les arrêts préventifs, les changements de série et les micro-arrêts non comptabilisés comme pannes</label>
+        <label class="option-item"><input type="radio" name="q22" value="d"> La Di s'applique aux machines et la Do s'applique uniquement aux lignes de production complètes — une approche qui s'écarte de la méthode étudiée en cours — ce n'est pas le bon critère à retenir dans ce contexte</label>
+      </div>
+      <button class="validate-btn" onclick="val(22)">✔ Valider</button>
+      <div class="feedback" id="fb22"></div>
+    </div>
+    <div class="question-block" id="qb23">
+      <div class="question-label">Question 23 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">En supposant une cadence de production de <strong>12 pièces/heure</strong> sur le tour Mazak, combien de pièces ont été <strong>perdues en production</strong> à cause des 36 heures d'arrêt pour réparation sur le semestre ?</div>
+      <div class="context-box"><strong>Formule :</strong> Pièces perdues = Temps de réparation total × Cadence = 36 × 12 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num23" placeholder="0">
+        <span class="unit-label">pièces perdues</span>
+      </div>
+      <button class="validate-btn" onclick="val(23)">✔ Valider</button>
+      <div class="feedback" id="fb23"></div>
+    </div>
+    <div class="question-block" id="qb24">
+      <div class="question-label">Question 24 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Le coût horaire d'arrêt du tour Mazak (perte de production + coût technicien) est estimé à <strong>85 €/heure</strong>. Quel est le <strong>coût total des pannes</strong> sur le semestre ?</div>
+      <div class="context-box"><strong>Formule :</strong> Coût total pannes = Temps total de réparation × Coût horaire = 36 × 85 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num24" placeholder="0">
+        <span class="unit-label">€ coût total pannes</span>
+      </div>
+      <button class="validate-btn" onclick="val(24)">✔ Valider</button>
+      <div class="feedback" id="fb24"></div>
+    </div>
+    <div class="question-block" id="qb25">
+      <div class="question-label">Question 25 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Un objectif de disponibilité de <strong>98 %</strong> est fixé pour le prochain semestre. Avec le même MTBF de 115,5 h, quel <strong>MTTR maximum</strong> faut-il atteindre pour respecter cet objectif ?</div>
+      <div class="context-box"><strong>Formule inversée :</strong> Di = MTBF / (MTBF + MTTR) → 0,98 = 115,5 / (115,5 + MTTR)<br>→ 115,5 + MTTR = 115,5 / 0,98 → MTTR = (115,5 / 0,98) − 115,5 = 117,86 − 115,5 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num25" step="0.1" placeholder="0,0">
+        <span class="unit-label">heures (MTTR max cible)</span>
+      </div>
+      <button class="validate-btn" onclick="val(25)">✔ Valider</button>
+      <div class="feedback" id="fb25"></div>
+    </div>
+    <div class="question-block" id="qb26">
+      <div class="question-label">Question 26 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Si on garde le MTTR actuel (4,5 h) et qu'on veut atteindre Di = 98 %, quel doit être le <strong>nouveau MTBF cible</strong> ?</div>
+      <div class="context-box"><strong>Formule inversée :</strong> 0,98 = MTBF / (MTBF + 4,5) → MTBF = 0,98 × (MTBF + 4,5)<br>→ 0,02 × MTBF = 0,98 × 4,5 → MTBF = 4,41 / 0,02 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num26" step="0.1" placeholder="0,0">
+        <span class="unit-label">heures (MTBF cible)</span>
+      </div>
+      <button class="validate-btn" onclick="val(26)">✔ Valider</button>
+      <div class="feedback" id="fb26"></div>
+    </div>
+    <div class="question-block" id="qb27">
+      <div class="question-label">Question 27 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Pour atteindre un MTBF de 220 h sur 960 h d'ouverture, quel <strong>nombre maximum de pannes</strong> peut-on tolérer (en supposant 4 h de réparation moyenne) ?</div>
+      <div class="context-box"><strong>Méthode :</strong> Si N pannes × 4 h = temps réparation, alors temps marche = 960 − 4N. MTBF = (960 − 4N)/N = 220. Résoudre : 960 − 4N = 220N → 960 = 224N → N = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num27" placeholder="0">
+        <span class="unit-label">pannes maximum</span>
+      </div>
+      <button class="validate-btn" onclick="val(27)">✔ Valider</button>
+      <div class="feedback" id="fb27"></div>
+    </div>
+    <div class="question-block" id="qb28">
+      <div class="question-label">Question 28 <span class="competence-tag">Analyse</span></div>
+      <div class="question-text">Pour calculer correctement les MTBF et MTTR de l'atelier, quel est le document <strong>indispensable</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q28" value="a"> Le carnet de bord (ou GMAO) qui enregistre toutes les pannes : date, durée d'intervention, type, cause, pièces remplacées</label>
+        <label class="option-item"><input type="radio" name="q28" value="b"> La fiche signalétique du constructeur de la machine — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q28" value="c"> Le planning de production de l'atelier — cette option ne respecte pas les règles de la démarche présentée — ce choix ne correspond pas à la méthode ou à la définition attendue ici</label>
+        <label class="option-item"><input type="radio" name="q28" value="d"> La feuille de temps des opérateurs (approximation qui ne correspond pas à la réalité du terrain) — une piste qui n'apporte pas de réponse complète à la question posée</label>
+      </div>
+      <button class="validate-btn" onclick="val(28)">✔ Valider</button>
+      <div class="feedback" id="fb28"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== Partie 4 – Plan d'action pour améliorer MTBF et MTTR ========== -->
+<div class="section-block">
+  <div class="section-header s4">
+    <div class="section-number">🔧</div>
+    <div class="section-title-block">
+      <h2>Partie 4 – Plan d'action pour améliorer MTBF et MTTR</h2>
+      <p>Proposer et chiffrer les améliorations de maintenance | Q29 à Q35</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="warning-box">
+      <strong>⚙️ Objectif :</strong> Sur le prochain semestre, l'objectif est de <strong>réduire le nombre de pannes de 8 à 5</strong> grâce à la maintenance préventive et d'<strong>atteindre un MTTR ≤ 2,36 h</strong> (objectif Di = 98 %). Le budget maintenance préventive disponible est de <strong>1 500 €</strong>.
+    </div>
+    <div class="question-block" id="qb29">
+      <div class="question-label">Question 29 <span class="competence-tag">Plan d'action</span></div>
+      <div class="question-text">L'analyse des pannes montre que P1 et P5 sont des <strong>ruptures de courroie de broche</strong> (même cause, récurrentes). Quelle action de maintenance préventive est la plus adaptée pour éliminer ces 2 pannes ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q29" value="a"> Former à nouveau les opérateurs à l'utilisation correcte du tour CNC pour éviter les surcharges mécaniques sur la broche (une solution qui ne traite pas la cause réelle du problème) — une approche qui s'écarte de la méthode étudiée en cours</label>
+        <label class="option-item"><input type="radio" name="q29" value="b"> Planifier un remplacement préventif systématique de la courroie de broche toutes les 100 heures de fonctionnement (avant la durée de vie théorique), intégré au plan de maintenance préventive avec traçabilité dans le carnet de bord</label>
+        <label class="option-item"><input type="radio" name="q29" value="c"> Remplacer le tour Mazak QT-300 par un modèle plus récent avec une courroie de meilleure qualité (confusion fréquente qu'il convient d'éviter) (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q29" value="d"> Attendre que la courroie se rompe et acheter un stock de pièces de rechange pour réduire le MTTR à moins d'1 heure (approximation qui ne correspond pas à la réalité du terrain) — cette option ne respecte pas les règles de la démarche présentée</label>
+      </div>
+      <button class="validate-btn" onclick="val(29)">✔ Valider</button>
+      <div class="feedback" id="fb29"></div>
+    </div>
+    <div class="question-block" id="qb30">
+      <div class="question-label">Question 30 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Si le plan de maintenance préventive permet de passer de <strong>8 pannes à 5 pannes</strong> sur le prochain semestre (même temps d'ouverture de 960 h, même temps de réparation moyen de 4 h/panne), quel sera le <strong>nouveau MTBF</strong> ?</div>
+      <div class="context-box"><strong>Données :</strong> Temps de réparation total = 5 × 4 = 20 h | Temps bon fonctionnement = 960 − 20 = 940 h<br><strong>Nouveau MTBF</strong> = 940 / 5 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num30" placeholder="0">
+        <span class="unit-label">heures (nouveau MTBF)</span>
+      </div>
+      <button class="validate-btn" onclick="val(30)">✔ Valider</button>
+      <div class="feedback" id="fb30"></div>
+    </div>
+    <div class="question-block" id="qb31">
+      <div class="question-label">Question 31 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Avec le nouveau MTBF = 188 h et un MTTR = 4 h (inchangé), quelle est la <strong>nouvelle disponibilité intrinsèque</strong> du tour Mazak après la mise en place du plan de maintenance préventive ?</div>
+      <div class="context-box"><strong>Formule :</strong> Di = MTBF / (MTBF + MTTR) × 100 = 188 / (188 + 4) × 100 = 188 / 192 × 100 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num31" step="0.1" placeholder="0,0">
+        <span class="unit-label">% nouvelle disponibilité</span>
+      </div>
+      <button class="validate-btn" onclick="val(31)">✔ Valider</button>
+      <div class="feedback" id="fb31"></div>
+    </div>
+    <div class="question-block" id="qb32">
+      <div class="question-label">Question 32 <span class="competence-tag">Plan d'action</span></div>
+      <div class="question-text">Pour la panne P6 (perte du programme CN, 8 h de réparation), quelle action préventive serait la <strong>plus efficace</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q32" value="a"> Acheter une nouvelle armoire de commande numérique</label>
+        <label class="option-item"><input type="radio" name="q32" value="b"> Mettre en place une <strong>sauvegarde automatique quotidienne</strong> du programme CN sur le réseau, et documenter une procédure de restauration testée mensuellement</label>
+        <label class="option-item"><input type="radio" name="q32" value="c"> Augmenter la durée de la garantie constructeur</label>
+        <label class="option-item"><input type="radio" name="q32" value="d"> Désactiver les fonctions automatiques pour réduire les risques</label>
+      </div>
+      <button class="validate-btn" onclick="val(32)">✔ Valider</button>
+      <div class="feedback" id="fb32"></div>
+    </div>
+    <div class="question-block" id="qb33">
+      <div class="question-label">Question 33 <span class="competence-tag">Plan d'action</span></div>
+      <div class="question-text">Un <strong>plan de maintenance préventive</strong> efficace doit comporter quels éléments ? (Cochez les 3 bonnes réponses)</div>
+      <div class="options-list">
+        <label class="option-item"><input type="checkbox" name="q33" value="a"> Une liste précise des opérations à réaliser, avec leur fréquence (heures, jours, semaines, cycles)</label>
+        <label class="option-item"><input type="checkbox" name="q33" value="b"> Un budget illimité pour pouvoir tout remplacer dès qu'un doute apparaît</label>
+        <label class="option-item"><input type="checkbox" name="q33" value="c"> Une traçabilité dans un carnet de bord ou GMAO (qui, quand, quoi, observations)</label>
+        <label class="option-item"><input type="checkbox" name="q33" value="d"> Un seul technicien responsable pour ne pas multiplier les interventions</label>
+        <label class="option-item"><input type="checkbox" name="q33" value="e"> Des indicateurs de suivi (MTBF, MTTR, Di, coût) pour mesurer l'efficacité du plan</label>
+      </div>
+      <button class="validate-btn" onclick="val(33)">✔ Valider</button>
+      <div class="feedback" id="fb33"></div>
+    </div>
+    <div class="question-block" id="qb34">
+      <div class="question-label">Question 34 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">Le plan préventif coûte <strong>1 200 € (pièces + main d'œuvre) par semestre</strong>. Calculez l'<strong>économie nette</strong> obtenue (gain pannes évitées − coût plan).</div>
+      <div class="context-box"><strong>Méthode :</strong> Pannes évitées = 8 − 5 = 3. Économie temps = 3 × 4 h = 12 h. Économie € = 12 × 85 = 1 020 €. Économie nette = 1 020 − 1 200 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num34" placeholder="0">
+        <span class="unit-label">€ économie nette/semestre</span>
+      </div>
+      <button class="validate-btn" onclick="val(34)">✔ Valider</button>
+      <div class="feedback" id="fb34"></div>
+    </div>
+    <div class="question-block" id="qb35">
+      <div class="question-label">Question 35 <span class="competence-tag">Plan d'action</span></div>
+      <div class="question-text">En plus de la fiabilité, la maintenance préventive joue un rôle crucial pour la <strong>sécurité</strong>. Pourquoi ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q35" value="a"> Elle évite les défaillances brutales d'éléments de sécurité (capteurs, freins, contacteurs) qui pourraient blesser un opérateur</label>
+        <label class="option-item"><input type="radio" name="q35" value="b"> Elle remplace le port des EPI (équipements de protection individuelle) — ce n'est pas le bon critère à retenir dans ce contexte — un choix qui ne règle pas durablement la situation observée</label>
+        <label class="option-item"><input type="radio" name="q35" value="c"> Elle garantit que la machine ne tombera plus jamais en panne — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q35" value="d"> Elle est obligatoire au sens de la loi pour toutes les machines (confusion fréquente qu'il convient d'éviter) — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+      </div>
+      <button class="validate-btn" onclick="val(35)">✔ Valider</button>
+      <div class="feedback" id="fb35"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== Partie 5 – AMDEC, niveaux et rapport de synthèse ========== -->
+<div class="section-block">
+  <div class="section-header s5">
+    <div class="section-number">✍️</div>
+    <div class="section-title-block">
+      <h2>Partie 5 – AMDEC, niveaux et rapport de synthèse</h2>
+      <p>Méthodes avancées et bilan final | Q36 à Q40</p>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="question-block" id="qb36">
+      <div class="question-label">Question 36 <span class="competence-tag">Analyse</span></div>
+      <div class="question-text">En maintenance, la méthode <strong>AMDEC</strong> est utilisée pour analyser les défaillances. Que signifie ce sigle ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q36" value="a"> Analyse des Modes de Défaillance, de leurs Effets et de leur Criticité</label>
+        <label class="option-item"><input type="radio" name="q36" value="b"> Analyse Mécanique des Équipements en Conduite — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+        <label class="option-item"><input type="radio" name="q36" value="c"> Aide au Management Des Équipes Compétentes — cette option ne respecte pas les règles de la démarche présentée</label>
+        <label class="option-item"><input type="radio" name="q36" value="d"> Audit des Modèles de Données pour les Équipements Critiques</label>
+      </div>
+      <button class="validate-btn" onclick="val(36)">✔ Valider</button>
+      <div class="feedback" id="fb36"></div>
+    </div>
+    <div class="question-block" id="qb37">
+      <div class="question-label">Question 37 <span class="competence-tag">Calcul</span></div>
+      <div class="question-text">En AMDEC, la criticité C = G × F × D (Gravité × Fréquence × Détectabilité), chaque facteur étant noté de 1 à 4. Pour la panne P6 (perte programme CN) : G=4 (très grave), F=1 (rare), D=3 (peu détectable). Calculez C.</div>
+      <div class="context-box"><strong>Méthode :</strong> C = 4 × 1 × 3 = ?</div>
+      <div class="number-input-wrap">
+        <input type="number" class="number-input" id="num37" placeholder="0">
+        <span class="unit-label">points de criticité</span>
+      </div>
+      <button class="validate-btn" onclick="val(37)">✔ Valider</button>
+      <div class="feedback" id="fb37"></div>
+    </div>
+    <div class="question-block" id="qb38">
+      <div class="question-label">Question 38 <span class="competence-tag">Définition</span></div>
+      <div class="question-text">Selon la norme française NF X 60-010, la maintenance se classe en <strong>5 niveaux</strong>. Quel est l'objet du <strong>niveau 1</strong> ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q38" value="a"> Réparations lourdes nécessitant l'intervention du constructeur (ce choix n'a qu'un effet limité sur le résultat recherché)</label>
+        <label class="option-item"><input type="radio" name="q38" value="b"> Diagnostic complexe par technicien spécialisé — cette proposition reste partielle et ne couvre pas correctement la situation</label>
+        <label class="option-item"><input type="radio" name="q38" value="c"> Surveillance simple par l'opérateur (lecture niveaux, contrôles visuels, nettoyage)</label>
+        <label class="option-item"><input type="radio" name="q38" value="d"> Rénovation complète de la machine (confusion fréquente qu'il convient d'éviter)</label>
+      </div>
+      <button class="validate-btn" onclick="val(38)">✔ Valider</button>
+      <div class="feedback" id="fb38"></div>
+    </div>
+    <div class="question-block" id="qb39">
+      <div class="question-label">Question 39 <span class="competence-tag">Analyse</span></div>
+      <div class="question-text">Parmi ces 4 stratégies de maintenance, laquelle a le <strong>meilleur ratio coût/efficacité</strong> sur le long terme pour une machine critique ?</div>
+      <div class="options-list">
+        <label class="option-item"><input type="radio" name="q39" value="a"> 100 % corrective (réparer après panne uniquement) (confusion fréquente qu'il convient d'éviter) — un raisonnement qui ne tient pas compte de l'ensemble des paramètres du problème</label>
+        <label class="option-item"><input type="radio" name="q39" value="b"> 100 % préventive systématique (remplacer toutes les pièces tous les mois, qu'elles soient usées ou non) (piste à écarter au vu des éléments du cas étudié)</label>
+        <label class="option-item"><input type="radio" name="q39" value="c"> Maintenance externalisée à 100 % à un prestataire — cette option ne respecte pas les règles de la démarche présentée (option séduisante en apparence mais erronée sur le fond)</label>
+        <label class="option-item"><input type="radio" name="q39" value="d"> Mix corrective + préventive systématique + conditionnelle (basée sur l'état réel mesuré : vibrations, températures, usure) — c'est la maintenance prédictive moderne</label>
+      </div>
+      <button class="validate-btn" onclick="val(39)">✔ Valider</button>
+      <div class="feedback" id="fb39"></div>
+    </div>
+    <div class="question-block" id="qb40">
+      <div class="question-label">Question 40 <span class="competence-tag">Rapport</span></div>
+      <div class="question-text">Rédigez le <strong>rapport de synthèse maintenance</strong> du tour CNC Mazak QT-300 pour le semestre écoulé. Il doit inclure : les indicateurs calculés (MTBF, MTTR, Di, Do), l'analyse des pannes par type, le diagnostic des points faibles, le plan d'action préventif pour le prochain semestre et les indicateurs cibles.</div>
+      <div class="info-box" style="margin-bottom:12px;"><strong>📝 Attendu :</strong> MTBF = 115,5 h, MTTR = 4,5 h, Di = 96,25 %, Do = 96,25 %, 4 pannes mécaniques (cause dominante : courroie broche × 2), P6 panne la plus longue (8 h), plan d'action (remplacement préventif courroie 100 h, sauvegarde programme CN), cibles : 5 pannes, MTBF = 188 h, Di ≥ 97,9 %.</div>
+      <textarea class="text-input" id="a40" style="min-height:170px;" placeholder="RAPPORT DE MAINTENANCE – Tour CNC Mazak QT-300 – Lycée Vaucanson&#10;Période : Semestre 1 | Technicien : [Nom] | Date : _____&#10;&#10;1. INDICATEURS CALCULÉS&#10;• MTBF = 924/8 = 115,5 h | MTTR = 36/8 = 4,5 h&#10;• Di = 115,5/120 × 100 = 96,25 % | Do = 924/960 × 100 = 96,25 %&#10;&#10;2. ANALYSE DES PANNES&#10;• 4 mécaniques (50 %) - dont 2 ruptures courroie broche (récurrentes)&#10;• 3 électriques | 1 informatique (P6 = 8 h, la plus longue)&#10;• Coût total = 36 × 85 = 3 060 €/semestre&#10;&#10;3. DIAGNOSTIC&#10;Cause racine principale = usure courroie broche non anticipée (P1 + P5)&#10;P6 = défaut sauvegarde programme CN&#10;&#10;4. PLAN D'ACTION PRÉVENTIF&#10;• Remplacement préventif courroie toutes les 100 h&#10;• Sauvegarde quotidienne programme CN + procédure restauration&#10;• Mise en place GMAO et indicateurs MTBF/MTTR mensuels&#10;Coût plan : 1 200 €/semestre&#10;&#10;5. INDICATEURS CIBLES SEMESTRE 2&#10;• 5 pannes max (au lieu de 8) | MTBF cible = 188 h | Di cible = 97,9 %&#10;• Économie production : 432 - 240 = 192 pièces × 50 € = 9 600 € de marge récupérée"></textarea>
+      <button class="validate-btn" onclick="val(40)">✔ Valider le rapport</button>
+      <div class="feedback" id="fb40"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="voir-note-btn" id="voir-note-wrap">
+  <button onclick="showFinal()">📊 Voir mon évaluation par compétences</button>
+</div>
+
+<div class="final-section" id="final-section" style="display:none;">
+  <h2>🎓 Récapitulatif du TP – MTBF / MTTR</h2>
+  <p style="color:#555;font-size:.93rem;">Évaluation par compétences :</p>
+  <div class="final-note" id="final-note">– / 40</div>
+  <p style="font-size:.86rem;color:#777;margin-bottom:10px;">Résultats par compétence :</p>
+  <div class="comp-summary" id="comp-summary"></div>
+  <div style="background:var(--mt-clair);border-radius:10px;padding:16px 20px;margin:18px 0;text-align:left;font-size:.88rem;line-height:1.8;">
+    <strong style="color:var(--mt);">📌 Comment envoyer votre copie en 2 étapes :</strong><br>
+    <b>Étape 1 —</b> Cliquez sur <em>« 📄 Télécharger ma correction en PDF »</em>.<br>
+    <b>Étape 2 —</b> Sélectionnez votre classe et cliquez sur <em>« 📤 Envoyer au professeur »</em>.
+  </div>
+  <div style="margin:10px 0;">
+    <label style="font-size:.88rem;font-weight:700;color:var(--gris);display:block;margin-bottom:6px;">Confirmez votre classe :</label>
+    <select id="classe-envoi" style="padding:9px 13px;border:2px solid var(--gris-clair);border-radius:8px;font-size:.95rem;font-family:'Barlow',sans-serif;background:#fff;">
+      <option value="">-- Sélectionnez --</option>
+      <option>2PMIA1</option><option>2PMIA2</option><option>2PMIA3</option>
+      <option>2PMIA4</option><option>2PMIA5</option><option>1PLP</option>
+      <option>TPLP</option><option>1CIP G1</option><option>1CIP G2</option>
+      <option>2CIP G1</option><option>2CIP G2</option><option>GRETA</option>
+    </select>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+    <button class="send-btn pdf-btn" onclick="lancerPDF()">📄 Télécharger ma correction en PDF</button>
+    <button class="send-btn" onclick="envoyerNC()">📤 Envoyer au professeur</button>
+  </div>
+  <div id="send-status"></div>
+</div>
+
+</div><!-- /tp-content -->
+</div><!-- /container -->
+
+<script>
+var tpUnlocked=false;
+function checkVideo(){
+  var boxes=document.querySelectorAll('.vcheck');
+  var all=true;boxes.forEach(function(b){if(!b.checked)all=false;});
+  var btn=document.getElementById('video-start-btn');
+  btn.disabled=!all;
+  btn.innerHTML=all?'🚀 Démarrer le TP – MTBF & MTTR':'🔒 Cochez tous les points clés pour débloquer le TP';
+}
+function deverrouillerTP(){
+  var ok=true;
+  ['nom','prenom','classe'].forEach(function(f){
+    var el=document.getElementById('eleve-'+f);
+    var hint=document.getElementById('hint-'+f);
+    if(!el.value.trim()){el.classList.add('field-error');hint.classList.add('show');ok=false;}
+    else{el.classList.remove('field-error');hint.classList.remove('show');}
+  });
+  if(!ok){
+    alert("⚠ Veuillez d'abord renseigner votre Nom, Prénom et Classe en haut de la page avant de démarrer le TP.");
+    document.getElementById('eleve-nom').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  tpUnlocked=true;
+  var content=document.getElementById('tp-content');
+  content.style.pointerEvents='auto';content.style.opacity='1';content.style.userSelect='auto';content.style.filter='none';
+  timerPaused=false;timerEl.style.opacity='1';pauseBtn.textContent='⏸';pauseBtn.style.background='rgba(255,255,255,.25)';
+  var btn=document.getElementById('video-start-btn');
+  btn.innerHTML='✅ TP débloqué – Bonne chance !';btn.disabled=true;btn.style.background='#6c757d';
+  setTimeout(function(){content.scrollIntoView({behavior:'smooth',block:'start'});},300);
+}
+
+var DUREE=120*60,secondes=DUREE,timerPaused=true;
+var timerEl=document.getElementById('timer');
+timerEl.style.opacity='0.5';
+var pauseBtn=document.getElementById('pause-btn');
+pauseBtn.textContent='▶';pauseBtn.style.background='rgba(255,204,0,.4)';
+setInterval(function(){
+  if(timerPaused)return;
+  secondes--;if(secondes<0)secondes=0;
+  var h=Math.floor(secondes/3600),m=Math.floor((secondes%3600)/60),s=secondes%60;
+  timerEl.textContent=h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(secondes<600)timerEl.classList.add('urgent');
+},1000);
+function togglePause(){
+  timerPaused=!timerPaused;
+  pauseBtn.textContent=timerPaused?'▶':'⏸';
+  pauseBtn.style.background=timerPaused?'rgba(255,204,0,.4)':'rgba(255,255,255,.25)';
+  timerEl.style.opacity=timerPaused?'0.5':'1';
+}
+
+var tpStartTime=Date.now(),keyCount=0,pasteCount=0,pasteDetails=[],lastValidationTime=null;
+var keyActiveMs=0,keyLastStart=null,inactiveMs=0,inactiveLastStart=null,inactivityTimer=null;
+var qTimestamps={};
+document.addEventListener('keydown',function(){if(!keyLastStart)keyLastStart=Date.now();resetInact();});
+document.addEventListener('keyup',function(){keyCount++;if(keyLastStart){keyActiveMs+=Date.now()-keyLastStart;keyLastStart=null;}resetInact();});
+document.addEventListener('paste',function(e){pasteCount++;var bl=e.target?e.target.closest('[id^="qb"]'):null;pasteDetails.push({zone:bl?bl.id.replace('qb','Q'):'?',heure:new Date().toLocaleTimeString('fr-FR')});resetInact();});
+function resetInact(){if(inactiveLastStart){inactiveMs+=Date.now()-inactiveLastStart;inactiveLastStart=null;}clearTimeout(inactivityTimer);inactivityTimer=setTimeout(function(){inactiveLastStart=Date.now();},30000);}
+resetInact();
+function recordQTime(id){var now=Date.now();if(!qTimestamps['q'+id])qTimestamps['q'+id]={start:lastValidationTime||tpStartTime};qTimestamps['q'+id].validated=now;qTimestamps['q'+id].seconds=Math.round((now-qTimestamps['q'+id].start)/1000);lastValidationTime=now;}
+function fmtDur(ms){if(ms<0)ms=0;var t=Math.round(ms/1000),h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;if(h>0)return h+'h '+String(m).padStart(2,'0')+'min';if(m>0)return m+'min '+String(s).padStart(2,'0')+'s';return s+'s';}
+function getStats(){return{totalMs:Date.now()-tpStartTime,keyMs:keyActiveMs+(keyLastStart?Date.now()-keyLastStart:0),inactMs:inactiveMs+(inactiveLastStart?Date.now()-inactiveLastStart:0),keyCount:keyCount,pasteCount:pasteCount,pasteDetails:pasteDetails,elapsed:DUREE-secondes};}
+
+var scores={};var TOTAL_Q=40;
+var qComp={1:'Définition',2:'Définition',3:'Définition',4:'Définition',5:'Définition',6:'Définition',7:'Définition',8:'Définition',9:'Définition',10:'Définition',11:'Calcul',12:'Calcul',13:'Calcul',14:'Analyse',15:'Analyse',16:'Calcul',17:'Calcul',18:'Calcul',19:'Calcul',20:'Analyse',21:'Calcul',22:'Analyse',23:'Calcul',24:'Calcul',25:'Calcul',26:'Calcul',27:'Calcul',28:'Analyse',29:'Plan d\'action',30:'Calcul',31:'Calcul',32:'Plan d\'action',33:'Plan d\'action',34:'Calcul',35:'Plan d\'action',36:'Analyse',37:'Calcul',38:'Définition',39:'Analyse',40:'Rapport'};
+var qTitres=['','Définition et rôle du MTBF','Formule du MTBF','Formule de la disponibilité Di','Confusion fiabilité vs maintenabilité','Action pour améliorer le MTBF','Définition du MTTR','Action pour améliorer le MTTR','FMD / FMDS et indicateurs associés','Différence Di et Do','Liens MTBF/MTTR avec le TRS','Calcul MTBF Mazak QT-300 (115,5 h)','Calcul MTTR Mazak QT-300 (4,5 h)','Calcul disponibilité intrinsèque Di (96,25 %)','Nombre de pannes mécaniques (4)','Panne la plus longue – P6 (8 h)','MTTR corrigé sans P6 (4 h)','Application directe MTBF (autre machine)','Application directe MTTR (autre machine)','Calcul Di perceuse colonne','Comparaison priorités d\'amélioration','Calcul disponibilité opérationnelle Do (96,25 %)','Différence Di vs Do en pratique','Calcul pièces perdues en production (432)','Calcul coût total des pannes (3 060 €)','Calcul MTTR cible pour Di = 98 % (2,36 h)','Calcul MTBF cible pour Di = 98 %','Nombre de pannes max pour MTBF = 220 h','Importance du carnet de bord','Action préventive pour courroies récurrentes','Calcul nouveau MTBF après plan préventif (188 h)','Calcul nouvelle Di après plan préventif (97,9 %)','Action préventive panne automate P6','Composantes d\'un plan de maintenance préventive','ROI du plan de maintenance préventive','Maintenance préventive et sécurité','Méthode AMDEC','Calcul de la criticité AMDEC','Les 5 niveaux de maintenance (norme NF X 60-010)','Comparaison stratégies de maintenance','Rapport de synthèse maintenance Mazak QT-300'];
+
+var MSG={
+  1:{ok:"Correct ! MTBF = Mean Time Between Failures = temps moyen entre 2 pannes. C'est l'indicateur de FIABILITÉ. Plus il est élevé, plus la machine tombe rarement en panne.",nok:"MTBF = temps moyen de bon fonctionnement entre 2 pannes. Indicateur de FIABILITÉ. À ne pas confondre avec le MTTR (maintenabilité) ni avec la disponibilité (résultat global)."},
+  2:{ok:"Correct ! MTBF = Temps total de bon fonctionnement / Nombre de pannes. Attention : ce n'est PAS le temps de réparation (qui sert au MTTR).",nok:"MTBF = Temps de bon fonctionnement (machine OK) ÷ Nombre de pannes. Le temps de réparation sert au MTTR, pas au MTBF."},
+  3:{ok:"Correct ! Di = MTBF / (MTBF + MTTR). C'est le rapport entre le temps de bon fonctionnement (MTBF) et le temps total (MTBF + MTTR).",nok:"Di = MTBF / (MTBF + MTTR). C'est la part du temps où la machine fonctionne, par rapport au temps total (fonctionnement + réparation)."},
+  4:{ok:"Correct ! Confusion classique. MTBF = FIABILITÉ (fréquence). MTTR = MAINTENABILITÉ (rapidité de réparation). Une machine fiable peut être peu maintenable (et inversement).",nok:"MTBF = fiabilité (fréquence des pannes). MTTR = maintenabilité (rapidité de réparation). Ce sont 2 concepts distincts."},
+  5:{ok:"Correct ! Pour le MTBF (fiabilité), on agit en amont : maintenance préventive systématique pour éviter la panne. Le stock et la formation rapide améliorent le MTTR, pas le MTBF.",nok:"MTBF s'améliore par la maintenance PRÉVENTIVE (anticiper les pannes). Stock de pièces et formation rapide = améliorent le MTTR (rapidité de réparation), pas le MTBF."},
+  6:{ok:"Correct ! MTTR = Mean Time To Repair = temps moyen de réparation. C'est l'indicateur de MAINTENABILITÉ : plus il est faible, plus la machine est facile et rapide à réparer.",nok:"MTTR = Mean Time To Repair = temps moyen de réparation. Indicateur de MAINTENABILITÉ. Plus il est faible, plus la machine est facile à réparer."},
+  7:{ok:"Correct ! Pour réduire le MTTR : stock local de pièces + procédures claires + techniciens formés. Tout ce qui accélère la réparation. Les contrôles préventifs et la qualité machine améliorent le MTBF, pas le MTTR.",nok:"MTTR s'améliore par : stock pièces de rechange, modes opératoires illustrés, formation auto-diagnostic. Contrôles préventifs et qualité machine = MTBF, pas MTTR."},
+  8:{ok:"Correct ! FMDS = Fiabilité (MTBF), Maintenabilité (MTTR), Disponibilité (Di), Sécurité. Les 4 piliers de l'analyse SdF (Sûreté de Fonctionnement) en industrie.",nok:"FMDS = Fiabilité - Maintenabilité - Disponibilité - Sécurité. Le quartet de la Sûreté de Fonctionnement. Chaque lettre est associée à des indicateurs (MTBF, MTTR, Di, taux d'accident...)."},
+  9:{ok:"Correct ! Di = vue 'pannes pures' (MTBF/MTTR). Do = vue 'temps réel' incluant tous les arrêts non productifs. Do est toujours ≤ Di.",nok:"Di mesure les pannes pures (MTBF/MTTR). Do intègre TOUS les arrêts non productifs (préventif inclus). Do ≤ Di toujours."},
+  10:{ok:"Correct ! Di entre dans le TRS, MTBF élevé = + de marche = + de TRS, MTTR élevé = − de TRS. Les indicateurs sont liés, pas séparés. La formule TRS = MTBF × MTTR est fausse.",nok:"3 vraies : Di est une composante du TRS, MTBF élevé améliore TRS, MTTR élevé pénalise TRS. Les indicateurs sont LIÉS, pas séparés."},
+  11:{ok:"Correct ! MTBF = 924 / 8 = 115,5 h. En moyenne, le tour fonctionne 115,5 heures avant une panne — soit environ 3 semaines pleines.",nok:"Calcul : 924 / 8 = 115,5 h. C'est la durée moyenne entre deux pannes."},
+  12:{ok:"Correct ! MTTR = 36 / 8 = 4,5 h. Une réparation moyenne dure 4 h 30. C'est correct mais améliorable.",nok:"Calcul : 36 / 8 = 4,5 h en moyenne par panne. Indicateur de la maintenabilité de la machine."},
+  13:{ok:"Correct ! Di = 115,5 / 120 × 100 = 96,25 %. C'est honorable mais on peut viser 98 % pour un équipement critique.",nok:"Calcul : 115,5 / (115,5 + 4,5) × 100 = 115,5/120 × 100 = 96,25 %. C'est correct mais améliorable."},
+  14:{ok:"Correct ! P1, P3, P5 et P7 = 4 pannes mécaniques (50 % des pannes). Cause dominante. À cibler en priorité.",nok:"Pannes mécaniques : P1, P3, P5, P7 = 4. C'est la moitié des pannes. À traiter en priorité par maintenance préventive."},
+  15:{ok:"Correct ! P6 = 8 h, soit 22 % du temps total. Solution : sauvegarde régulière du programme + procédure de restauration documentée.",nok:"P6 (panne automate/programme CN) = 8 h, panne exceptionnelle mais lourde. À sécuriser par sauvegarde programme + procédure de restauration."},
+  16:{ok:"Correct ! MTTR corrigé = 28 / 7 = 4 h. Sans la panne exceptionnelle P6, le MTTR moyen est de 4 h. Plus représentatif du fonctionnement normal.",nok:"Calcul : 28 / 7 = 4 h. Sans P6, le MTTR baisse à 4 h. Représentatif des pannes 'normales' (mécaniques, électriques)."},
+  17:{ok:"Correct ! MTBF perceuse = 1 000 / 5 = 200 h. Elle est plus fiable que le tour Mazak (115,5 h). En moyenne, une panne toutes les 200 h de fonctionnement.",nok:"Calcul : 1 000 / 5 = 200 h. La perceuse a un MTBF supérieur au tour Mazak. Elle est plus fiable."},
+  18:{ok:"Correct ! MTTR perceuse = 15 / 5 = 3 h. Mieux que le tour Mazak (4,5 h). Elle est aussi plus maintenable.",nok:"Calcul : 15 / 5 = 3 h. La perceuse a un MTTR plus bas que le tour, donc plus rapide à réparer."},
+  19:{ok:"Correct ! Di = 200 / 203 × 100 ≈ 98,5 %. La perceuse est plus disponible que le Mazak (96,25 %). Elle est plus fiable ET plus maintenable.",nok:"Calcul : 200/(200+3) × 100 = 98,5 %. La perceuse atteint déjà l'objectif des 98 % grâce à son bon MTBF et son faible MTTR."},
+  20:{ok:"Correct ! Le MTBF du Mazak (115,5 h) est seulement 58 % de celui de la perceuse (200 h) — c'est l'écart le plus important. Priorité : maintenance préventive pour augmenter le MTBF.",nok:"Le MTBF du Mazak n'est qu'à 58 % de celui de la perceuse. C'est le plus gros écart. Priorité : maintenance préventive (courroies, capteurs récurrents)."},
+  21:{ok:"Correct ! Do = 924 / 960 × 100 = 96,25 %. Sur le tour Mazak, Di = Do car on n'a pas d'autre arrêt non productif que les pannes.",nok:"Calcul : 924/960 × 100 = 96,25 %. Sur ce semestre, Do = Di car les seuls arrêts sont des pannes correctives."},
+  22:{ok:"Correct ! Di = vue théorique 'pannes pures'. Do = vue réelle qui intègre TOUS les arrêts non productifs (préventif inclus). Do ≤ Di en général.",nok:"Di = pannes correctives uniquement (théorique). Do = tous les arrêts (préventif + changements + micro-arrêts). Do ≤ Di en général."},
+  23:{ok:"Correct ! 36 × 12 = 432 pièces non produites à cause des pannes. C'est 432 pièces de chiffre d'affaires perdues sur le semestre.",nok:"Calcul : 36 × 12 = 432 pièces. C'est ce que le tour aurait dû produire pendant les arrêts panne."},
+  24:{ok:"Correct ! 36 × 85 = 3 060 €/semestre. Soit 6 120 €/an. Tout euro investi dans la maintenance préventive jusqu'à 3 000 €/semestre est rentable !",nok:"Calcul : 36 × 85 = 3 060 €. Coût direct des pannes. Une maintenance préventive de moins de 3 000 €/semestre serait rentable."},
+  25:{ok:"Correct ! MTTR cible ≈ 2,36 h. Pour atteindre 98 % de Di sans toucher au MTBF, il faut diviser le MTTR par 2 (4,5 → 2,36 h). Très exigeant !",nok:"Calcul : (115,5 / 0,98) − 115,5 ≈ 2,36 h. Très exigeant : il faut diviser le MTTR actuel par presque 2. À combiner avec une amélioration du MTBF."},
+  26:{ok:"Correct ! MTBF cible ≈ 220 h. Il faut presque doubler le MTBF actuel (115,5 → 220 h) pour atteindre 98 % avec le même MTTR. Maintenance préventive ambitieuse.",nok:"Calcul : 4,41 / 0,02 = 220,5 h. Il faut presque doubler le MTBF actuel. Combiner avec une réduction du MTTR serait plus réaliste."},
+  27:{ok:"Correct ! N ≈ 4 pannes max. On passe de 8 pannes à 4 pannes (-50 %). Cela demande une maintenance préventive très efficace pour atteindre cet objectif.",nok:"Calcul : 960 / 224 = 4,28 → 4 pannes max. Diviser par 2 le nombre de pannes (8 → 4) est très ambitieux."},
+  28:{ok:"Correct ! Le carnet de bord (papier) ou la GMAO (logiciel) sont la source unique pour calculer MTBF/MTTR. Sans historique, pas d'indicateur fiable. Le retour d'expérience (REX) est la base de la maintenance.",nok:"C'est le carnet de bord (ou GMAO = Gestion de Maintenance Assistée par Ordinateur) qui contient tout l'historique. Sans REX (Retour d'Expérience), pas d'indicateur."},
+  29:{ok:"Correct ! Une rupture récurrente d'une pièce d'usure (courroie) doit être traitée par remplacement préventif systématique avant durée de vie théorique. C'est l'inverse du curatif.",nok:"Pour une pièce d'usure récurrente : remplacement préventif programmé AVANT la durée de vie théorique. Acheter un nouveau tour ou attendre la panne sont des fausses solutions."},
+  30:{ok:"Correct ! Nouveau MTBF = 940 / 5 = 188 h. Soit +63 % par rapport au MTBF actuel (115,5 h). Le plan préventif est très efficace.",nok:"Calcul : 940 / 5 = 188 h. Le MTBF augmente de 63 % (de 115,5 à 188 h) grâce au passage de 8 à 5 pannes."},
+  31:{ok:"Correct ! Nouvelle Di = 188/192 × 100 ≈ 97,9 %. On gagne +1,65 points de Di. Très proche des 98 % visés !",nok:"Calcul : 188/192 × 100 ≈ 97,9 %. Très proche de l'objectif 98 %. Un effort supplémentaire sur le MTTR finaliserait l'objectif."},
+  32:{ok:"Correct ! Sauvegarde + procédure de restauration testée = retour à la production en moins d'1 h au lieu de 8 h. Action de maintenabilité (réduit le MTTR) à coût quasi nul.",nok:"Sauvegarde quotidienne du programme + procédure de restauration testée = MTTR de 1 h au lieu de 8 h. Solution à coût quasi nul."},
+  33:{ok:"Correct ! Un bon plan préventif : (1) liste opérations + fréquences, (2) traçabilité GMAO, (3) indicateurs de suivi. Le budget illimité ou un technicien unique sont des fausses bonnes idées.",nok:"3 essentiels : opérations + fréquences, traçabilité GMAO, indicateurs de suivi (MTBF, MTTR, Di). Pas besoin d'un budget illimité ni d'un technicien unique."},
+  34:{ok:"Correct (ou très proche) ! Économie nette ≈ -180 € (perte). Mais cela ne tient pas compte du gain de production (12 h × 12 pièces = 144 pièces produites en plus). En l'incluant, c'est largement rentable.",nok:"Calcul direct : 1 020 − 1 200 = -180 € (perte sur les seuls coûts panne). MAIS si on intègre les 144 pièces produites en plus (12 h × 12), à 50 €/pièce de marge = +7 200 € nets."},
+  35:{ok:"Correct ! La maintenance préventive prévient les défaillances brutales d'éléments de sécurité (capteurs d'arrêt d'urgence, freins, contacteurs…) qui pourraient causer des accidents. Sécurité = priorité.",nok:"Maintenance préventive = elle évite les défaillances brutales d'éléments de sécurité (capteurs, freins…). Elle ne remplace pas les EPI et ne garantit jamais 0 panne."},
+  36:{ok:"Correct ! AMDEC = Analyse des Modes de Défaillance, de leurs Effets et de leur Criticité. Méthode de priorisation des actions de maintenance basée sur le risque (Gravité × Fréquence × Détection).",nok:"AMDEC = Analyse des Modes de Défaillance, de leurs Effets et de leur Criticité. C'est l'outil n°1 pour prioriser les actions préventives basé sur le risque."},
+  37:{ok:"Correct ! C = 12 (sur un max de 64). Bien que la panne soit rare (F=1), sa gravité (4) et sa faible détectabilité (3) en font une priorité d'action — d'où la sauvegarde régulière.",nok:"Calcul : 4 × 1 × 3 = 12. La criticité priorise selon G × F × D. Une panne grave et peu détectable même rare doit être traitée."},
+  38:{ok:"Correct ! Niveau 1 = surveillance simple opérateur (contrôles visuels, lubrification, nettoyage). Niveau 2 = dépannage par échange standard. Niveau 5 = rénovation/reconstruction.",nok:"Niveau 1 = opérateur (surveillance, contrôles visuels, lubrification). Niveau 5 = rénovation par constructeur. La maintenance progresse en complexité."},
+  39:{ok:"Correct ! La maintenance prédictive (basée sur capteurs : vibrations, T°, usure) optimise le coût/efficacité. 100 % correctif = trop de pannes ; 100 % préventif = surcoût massif.",nok:"Maintenance prédictive (capteurs IoT, surveillance état réel) = optimum coût/efficacité. 100 % correctif = trop de pertes ; 100 % préventif = trop coûteux."}
+};
+
+var CORRECT_ANS={
+  1:{type:'radio',ans:'c'},
+  2:{type:'radio',ans:'c'},
+  3:{type:'radio',ans:'d'},
+  4:{type:'radio',ans:'c'},
+  5:{type:'radio',ans:'d'},
+  6:{type:'radio',ans:'a'},
+  7:{type:'radio',ans:'b'},
+  8:{type:'radio',ans:'d'},
+  9:{type:'radio',ans:'a'},
+  10:{type:'checkbox',ans:["a", "b", "c"]},
+  11:{type:'num',ans:115.5,tol:2},
+  12:{type:'num',ans:4.5,tol:2},
+  13:{type:'num',ans:96.25,tol:2},
+  14:{type:'num',ans:4,tol:1},
+  15:{type:'radio',ans:'b'},
+  16:{type:'num',ans:4,tol:2},
+  17:{type:'num',ans:200,tol:1},
+  18:{type:'num',ans:3,tol:1},
+  19:{type:'num',ans:98.5,tol:2},
+  20:{type:'radio',ans:'b'},
+  21:{type:'num',ans:96.25,tol:2},
+  22:{type:'radio',ans:'c'},
+  23:{type:'num',ans:432,tol:1},
+  24:{type:'num',ans:3060,tol:1},
+  25:{type:'num',ans:2.36,tol:10},
+  26:{type:'num',ans:220.5,tol:5},
+  27:{type:'num',ans:4,tol:25},
+  28:{type:'radio',ans:'a'},
+  29:{type:'radio',ans:'b'},
+  30:{type:'num',ans:188,tol:2},
+  31:{type:'num',ans:97.9,tol:2},
+  32:{type:'radio',ans:'b'},
+  33:{type:'checkbox',ans:["a", "c", "e"]},
+  34:{type:'num',ans:-180,tol:50,neg:true},
+  35:{type:'radio',ans:'a'},
+  36:{type:'radio',ans:'a'},
+  37:{type:'num',ans:12,tol:1},
+  38:{type:'radio',ans:'c'},
+  39:{type:'radio',ans:'d'}
+};
+
+function setFB(id,ok,okMsg,nokMsg){
+  recordQTime(id);
+  var el=document.getElementById('fb'+id);
+  scores['q'+id]=ok?1:0;
+  if(ok){el.className='feedback ok show';el.innerHTML='<span class="feedback-icon">✅</span><div class="feedback-content">'+okMsg+'</div>';}
+  else{el.className='feedback nok show';el.innerHTML='<span class="feedback-icon">❌</span><div class="feedback-content"><strong>À revoir.</strong> '+nokMsg+'</div>';}
+  disableQ(id);updateScore();
+  setTimeout(function(){var e=document.getElementById('fb'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});},80);
+  if(document.querySelectorAll('.feedback.show').length>=TOTAL_Q)setTimeout(showFinal,600);
+}
+function disableQ(id){var b=document.getElementById('qb'+id);if(b)b.querySelectorAll('input,select,textarea,button.validate-btn').forEach(function(e){e.disabled=true;});}
+function updateScore(){
+  var pts=Object.values(scores).reduce(function(a,b){return a+b;},0);
+  var done=document.querySelectorAll('.feedback.show').length;
+  var sd=document.getElementById('score-display');if(sd)sd.textContent=pts+' / '+TOTAL_Q;
+  document.getElementById('progress-fill').style.width=(done/TOTAL_Q*100)+'%';
+  document.getElementById('progress-text').textContent=done+' / '+TOTAL_Q+' questions validées';
+  [[10,'m1'],[20,'m2'],[28,'m3'],[35,'m4']].forEach(function(j){if(done>=j[0])document.getElementById(j[1]).classList.add('done');});
+  if(done>=TOTAL_Q)document.getElementById('m5').classList.add('done');
+}
+
+function val(id){
+  if(!tpUnlocked){alert('Regardez d\'abord la vidéo et cochez les points clés pour débloquer le TP.');return;}
+  var cfg=CORRECT_ANS[id];
+  if(!cfg){
+    if(id===40){valTexte40();return;}
+    return;
+  }
+  var ok_msg=MSG[id]?MSG[id].ok:'Bonne réponse !';
+  var nok_msg=MSG[id]?MSG[id].nok:'Réponse incorrecte, consultez le cours.';
+  if(cfg.type==='radio'){
+    var v=document.querySelector('input[name="q'+id+'"]:checked');
+    if(!v){alert('Veuillez sélectionner une réponse.');return;}
+    var ok=v.value===cfg.ans;
+    document.querySelectorAll('input[name="q'+id+'"]').forEach(function(r){var li=r.closest('.option-item');if(r.value===cfg.ans)li.classList.add('correct');else if(r.checked&&!ok)li.classList.add('incorrect');});
+    setFB(id,ok,ok_msg,nok_msg);
+  }else if(cfg.type==='checkbox'){
+    var checked=[];
+    document.querySelectorAll('input[name="q'+id+'"]:checked').forEach(function(r){checked.push(r.value);});
+    if(!checked.length){alert('Cochez au moins une réponse.');return;}
+    var ok=cfg.ans.length===checked.length&&cfg.ans.every(function(c){return checked.includes(c);});
+    document.querySelectorAll('input[name="q'+id+'"]').forEach(function(r){var li=r.closest('.option-item');if(cfg.ans.includes(r.value))li.classList.add('correct');else if(r.checked)li.classList.add('incorrect');});
+    setFB(id,ok,ok_msg,nok_msg);
+  }else if(cfg.type==='num'){
+    var v2=parseFloat(document.getElementById('num'+id).value);
+    if(isNaN(v2)){alert('Entrez une valeur numérique.');return;}
+    // Tolérance en pourcentage de la valeur cible (avec valeur absolue pour les négatifs)
+    var ok=Math.abs(v2-cfg.ans)/(Math.abs(cfg.ans)||1)*100<=cfg.tol;
+    document.getElementById('num'+id).classList.add(ok?'correct':'incorrect');
+    setFB(id,ok,ok_msg,nok_msg);
+  }
+}
+
+function valTexte40(){
+  var txt=document.getElementById('a40').value.trim();
+  if(txt.length<80){alert('Veuillez rédiger un rapport plus complet (minimum 80 caractères).');return;}
+  document.getElementById('a40').classList.add('correct');
+  setFB(40,true,
+    'Rapport enregistré ! Un bon rapport maintenance présente les 4 indicateurs (MTBF, MTTR, Di, Do), l\'analyse par type de panne, le diagnostic des points faibles, le plan d\'action chiffré et les cibles (MTBF 188 h, Di 97,9 %).',
+    '');
+}
+
+function showFinal(){
+  var classe=document.getElementById('eleve-classe').value||'';
+  var ce=document.getElementById('classe-envoi');
+  if(ce&&classe) ce.value=classe;
+
+  if(classe==='GRETA'){
+    var ptsG=Object.values(scores).reduce(function(a,b){return a+b;},0);
+    var noteG=Math.round((ptsG/TOTAL_Q*20)*10)/10;
+    var htmlG='<div style="font-family:Barlow,sans-serif;margin-top:10px;text-align:center;padding:28px 20px;background:#f4f6f8;border-radius:12px;border:1px solid #e0e4e8;">'
+      +'<div style="font-size:.8rem;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:700;">Note obtenue</div>'
+      +'<div style="font-size:2.8rem;font-weight:800;color:#1a3a6b;line-height:1;">'+noteG+'<span style="font-size:1.3rem;color:#888;font-weight:600;"> / 20</span></div>'
+      +'<div style="font-size:.85rem;color:#777;margin-top:10px;">'+ptsG+' bonnes reponses sur '+TOTAL_Q+' questions</div>'
+      +'</div>';
+    var sumElG=document.getElementById('comp-summary');
+    if(sumElG)sumElG.innerHTML=htmlG;
+    document.getElementById('final-note').style.display='none';
+    document.getElementById('final-section').style.display='block';
+    document.getElementById('final-section').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  var PN_LBL=['','Maitrise insuffisante','Debut de maitrise','Maitrise fragile','Presque maitrise','Maitrise satisfaisante','Tres bonne maitrise'];
+  var PN_BG=['','#EE0000','#FFC000','#FFFF00','#92D050','#4EA72E','#275317'];
+  var PN_TC=['','#fff','#333','#333','#1a3a00','#fff','#fff'];
+  function lvl(r){if(r>=0.90)return 6;if(r>=0.75)return 5;if(r>=0.60)return 4;if(r>=0.40)return 3;if(r>=0.20)return 2;return 1;}
+  function pct(qs){var ok=0,tot=0;qs.forEach(function(n){if(scores['q'+n]!==undefined){tot++;if(scores['q'+n]===1)ok++;}});return tot>0?ok/tot:0;}
+  var Q_T1=[11, 12, 13, 16, 17, 18, 19, 21, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 37];
+  var Q_T2=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 20, 22, 28, 36, 38, 39, 40];
+
+  var isCIP=['1CIP G1','1CIP G2','2CIP G1','2CIP G2'].indexOf(classe)>=0;
+  var isPMIA=['2PMIA1','2PMIA2','2PMIA3','2PMIA4','2PMIA5'].indexOf(classe)>=0;
+
+  var cpList  =isCIP?['CP05','CP06']:isPMIA?['CP3.3','CP4.1']:['CP05','CP08'];
+  var cpDescCIP  ={'CP05':'Recueillir des donnees liees au produit et a la production','CP06':'Identifier des risques au poste de travail'};
+  var cpDescPMIA ={'CP3.3':'Assurer le suivi de la production (analyse des indicateurs, parametres)','CP4.1':'Realiser des interventions de maintenance de niveau 1 (inspection, surveillance)'};
+  var cpDescPLP  ={'CP05':'Assurer le suivi de production lie a l\'analyse des indicateurs et parametres de production','CP08':'Proposer des ameliorations et des pistes de resolution de problemes'};
+  var cpDesc=isCIP?cpDescCIP:isPMIA?cpDescPMIA:cpDescPLP;
+
+  var html='<div style="font-family:Barlow,sans-serif;margin-top:10px;">';
+  html+='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;padding:10px 12px;background:#f4f6f8;border-radius:8px;border:1px solid #e0e4e8;">';
+  html+='<div style="width:100%;font-size:.72rem;font-weight:700;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Code couleur Pronote</div>';
+  [[6,'#275317','Tres bonne maitrise'],[5,'#4EA72E','Maitrise satisfaisante'],[4,'#92D050','Presque maitrise'],[3,'#FFFF00','Maitrise fragile'],[2,'#FFC000','Debut de maitrise'],[1,'#EE0000','Maitrise insuffisante']].forEach(function(it){
+    html+='<span style="display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:#333;background:#fff;border:1px solid #ddd;border-radius:5px;padding:3px 8px;"><span style="width:14px;height:14px;border-radius:3px;background:'+it[1]+';border:1px solid rgba(0,0,0,.15);flex-shrink:0;"></span>'+it[2]+'</span>';
+  });
+  html+='</div>';
+
+  cpList.forEach(function(cp,i){
+    var qs=i===0?Q_T1:Q_T2;
+    var desc=cpDesc[cp]||cp;
+    var ratio=pct(qs),niveau=lvl(ratio);
+    var ok=0,answered=0;
+    qs.forEach(function(n){if(scores['q'+n]!==undefined){answered++;if(scores['q'+n]===1)ok++;}});
+    html+='<div style="display:flex;align-items:stretch;border-radius:8px;overflow:hidden;border:1px solid #ddd;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.08);">';
+    html+='<div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;padding:12px 10px;width:80px;min-width:80px;display:flex;align-items:center;justify-content:center;font-family:Barlow Condensed,sans-serif;font-size:.9rem;font-weight:800;text-align:center;line-height:1.2;">'+cp+'</div>';
+    html+='<div style="flex:1;padding:10px 14px;background:#fff;"><div style="font-size:.85rem;color:#222;line-height:1.5;font-weight:600;">'+desc+'</div><div style="font-size:.72rem;color:#888;margin-top:4px;">'+ok+'/'+answered+' questions reussies sur ce TP</div></div>';
+    html+='<div style="display:flex;flex-direction:column;gap:2px;padding:6px 8px;background:#fafafa;border-left:1px solid #eee;width:200px;min-width:200px;">';
+    for(var niv=6;niv>=1;niv--){
+      var active=(niv===niveau);
+      html+='<div style="height:20px;border-radius:4px;background:'+PN_BG[niv]+';display:flex;align-items:center;padding:0 8px;font-size:.63rem;font-weight:'+(active?900:500)+';color:'+PN_TC[niv]+';'+(active?'box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(0,0,0,.4);position:relative;z-index:1;':'opacity:.18;')+'">'+(PN_LBL[niv])+(active?' ◄':'')+'</div>';
+    }
+    html+='</div></div>';
+  });
+  html+='</div>';
+
+  document.getElementById('comp-summary').innerHTML=html;
+  document.getElementById('final-note').style.display='none';
+  document.getElementById('final-section').style.display='block';
+  document.getElementById('final-section').scrollIntoView({behavior:'smooth'});
+}
+
+var classeTokens={'2PMIA1':'https://nuage01.apps.education.fr/index.php/s/SFkasij3W8ZdY6X','2PMIA2':'https://nuage01.apps.education.fr/index.php/s/KWTiQL5cLkQnRkw','2PMIA3':'https://nuage01.apps.education.fr/index.php/s/Exk55DptbrJHmL8','2PMIA4':'https://nuage01.apps.education.fr/index.php/s/NyFcyoajmiDHWBN','2PMIA5':'https://nuage01.apps.education.fr/index.php/s/wbF4sqQkLCCr5Nj','1PLP':'https://nuage01.apps.education.fr/index.php/s/Q2LF28DBwcDbaZ3','TPLP':'https://nuage01.apps.education.fr/index.php/s/rq7TaGNDJc7MxZn','1CIP G1':'https://nuage01.apps.education.fr/index.php/s/ZDYKjyNzsF4LNNC','1CIP G2':'https://nuage01.apps.education.fr/index.php/s/KQp5LCtEKJsGXRT','2CIP G1':'https://nuage01.apps.education.fr/index.php/s/kybKoENkrz9qKEo','2CIP G2':'https://nuage01.apps.education.fr/index.php/s/5XdDxzyAJDFSgF4','GRETA':'https://nuage01.apps.education.fr/index.php/s/5Zf3m4FodLiToqg'};
+function envoyerNC(){
+  var cl=document.getElementById('classe-envoi').value;
+  if(!cl){alert('Sélectionnez votre classe.');return;}
+  var url=classeTokens[cl];
+  if(url){window.open(url,'_blank');document.getElementById('send-status').textContent='✅ Dossier NextCloud ouvert pour la classe '+cl+'. Déposez-y votre PDF.';document.getElementById('send-status').className='success';}
+}
+
+function safe(s){return String(s||'').replace(/[éèêëæœÉÈÊËÉ]/g,'e').replace(/[àâäÀÂÄ]/g,'a').replace(/[ùûüÙÛÜ]/g,'u').replace(/[îïÎÏ]/g,'i').replace(/[ôöÔÖ]/g,'o').replace(/[çÇ]/g,'c').replace(/[ñÑ]/g,'n').replace(/°/g,' ').replace(/[–—]/g,'-').replace(/[""«»]/g,'"').replace(/['']/g,"'").replace(/…/g,'...').replace(/✅|\[OK\]/g,'[OK]').replace(/❌|\[X\]/g,'[X]').replace(/⚠️|\[!\]/g,'[!]').replace(/[^\x20-\x7E]/g,'?').replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');}
+function wrapL(s,max){var w=String(s||'').split(' '),l=[],c='';w.forEach(function(wd){if(((c?c+' ':'')+wd).length<=max){c=(c?c+' ':'')+wd;}else{if(c)l.push(c);c=wd;}});if(c)l.push(c);return l.length?l:[''];}
+
+function lancerPDF(){
+  var nom=document.getElementById('eleve-nom').value.trim()||'(non renseigne)';
+  var prenom=document.getElementById('eleve-prenom').value.trim()||'(non renseigne)';
+  var classe=document.getElementById('eleve-classe').value||'(non renseigne)';
+  var isGRETA=(classe==='GRETA');
+  var pts=Object.values(scores).reduce(function(a,b){return a+b;},0);
+  var dateStr=new Date().toLocaleDateString('fr-FR');
+  var stats=getStats();
+  var W=595,H=842,ML=40,MR=40,MT=40;
+  var pages=[],curPage=null,y=0;
+  function newPage(){curPage={parts:[]};pages.push(curPage);y=H-MT;}
+  function chkY(n){if(!curPage||y<50+n)newPage();}
+  var CW=W-ML-MR;
+  function t(s,x,yy,sz,bold,r,g,b){r=r||0;g=g||0;b=b||0;curPage.parts.push('BT '+(bold?'/F2':'/F1')+' '+sz+' Tf '+r+' '+g+' '+b+' rg '+x+' '+yy+' Td ('+safe(s)+') Tj ET');}
+  function rect(x,yy,w,h,r,g,b){curPage.parts.push(r+' '+g+' '+b+' rg '+x+' '+yy+' '+w+' '+h+' re f 0 0 0 rg');}
+  function hline(yy){curPage.parts.push('0.7 0.7 0.7 RG 0.5 w '+ML+' '+yy+' m '+(W-MR)+' '+yy+' l S 0 0 0 RG');}
+  function addT(s,sz,bold,r,g,b,ind){sz=sz||10;ind=ind||0;var mc=Math.floor((CW-ind)/(sz*0.52));wrapL(s,mc).forEach(function(l){chkY(sz+5);t(l,ML+ind,y,sz,bold||false,r||0,g||0,b||0);y-=(sz+4);});}
+  function addSp(h){y-=(h||8);}
+  function addHL(){chkY(8);hline(y);y-=8;}
+  function addH2(s,r,g,b){chkY(20);rect(ML,y-2,CW,16,r,g,b);t(s,ML+5,y+1,10,true,1,1,1);y-=20;}
+  function addRow(cells,widths,isHdr,even){var rh=13;chkY(rh+2);var ry=y-2;if(isHdr)rect(ML,ry,CW,rh,0.18,0.49,0.20);else if(even)rect(ML,ry,CW,rh,0.91,0.96,0.91);var x=ML;cells.forEach(function(c,i){t(String(c||'').substring(0,widths[i]>120?70:30),x+2,y,8,isHdr,isHdr?1:0,isHdr?1:0,isHdr?1:0);x+=widths[i];});y-=rh;}
+
+  newPage();
+  rect(ML,y-4,CW,28,0.18,0.49,0.20);
+  t('TP MTBF/MTTR – Mazak QT-300 – Lycee Vaucanson Grenoble',ML+5,y+10,10,true,1,1,1);
+  t(nom.toUpperCase()+' '+prenom+' | Classe: '+classe+' | Date: '+dateStr,ML+5,y-1,9,false,0.85,1,0.85);
+  y-=36;
+  chkY(30);rect(ML,y-4,CW,26,0.91,0.96,0.91);
+  t(isGRETA?('NOTE : '+(Math.round((pts/TOTAL_Q*20)*10)/10)+' / 20   |   Questions validees : '+Object.keys(scores).length+' / '+TOTAL_Q):('Questions validees : '+Object.keys(scores).length+' / '+TOTAL_Q+' | Notation par competences Pronote'),ML+5,y+6,12,true,0.18,0.49,0.20);
+  y-=36;addSp(4);
+
+  addH2('RAPPEL – MTBF, MTTR ET DISPONIBILITE',0.18,0.49,0.20);
+  addT('MTBF = Temps bon fonctionnement / Nb pannes = 924 / 8 = 115,5 h (fiabilite)',9,false);
+  addT('MTTR = Temps total reparation / Nb pannes = 36 / 8 = 4,5 h (maintenabilite)',9,false);
+  addT('Di = MTBF / (MTBF + MTTR) x 100 = 115,5 / 120 x 100 = 96,25 % | Do = 924/960 x 100 = 96,25 %',9,false);
+  addT('Couts pannes = 36 h x 85 euros/h = 3 060 euros/semestre | 432 pieces perdues (36 h x 12 pieces/h)',9,false);
+  addT('Apres plan preventif : 5 pannes → MTBF = 188 h, Di = 97,9 %. MTTR cible pour Di=98% : 2,36 h.',9,true,0.1,0.3,0.12);
+  addSp(6);addHL();addSp(4);
+
+  var isCIP2=['1CIP G1','1CIP G2','2CIP G1','2CIP G2'].indexOf(classe)>=0;
+  var isPMIA2=['2PMIA1','2PMIA2','2PMIA3','2PMIA4','2PMIA5'].indexOf(classe)>=0;
+  var PN_LBL2=['','Maitrise insuffisante','Debut de maitrise','Maitrise fragile','Presque maitrise','Maitrise satisfaisante','Tres bonne maitrise'];
+  function lvlPDF(r){if(r>=0.90)return 6;if(r>=0.75)return 5;if(r>=0.60)return 4;if(r>=0.40)return 3;if(r>=0.20)return 2;return 1;}
+  function pctPDF(qs){var ok=0,tot=0;qs.forEach(function(n){if(scores['q'+n]!==undefined){tot++;if(scores['q'+n]===1)ok++;}});return tot>0?ok/tot:0;}
+  var Q_T1_PDF=[11, 12, 13, 16, 17, 18, 19, 21, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 37];
+  var Q_T2_PDF=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 20, 22, 28, 36, 38, 39, 40];
+  var cpList2=isCIP2?['CP05','CP06']:isPMIA2?['CP3.3','CP4.1']:['CP05','CP08'];
+  var cpDescCIP2={'CP05':'Recueillir des donnees liees au produit et a la production','CP06':'Identifier des risques au poste de travail'};
+  var cpDescPMIA2={'CP3.3':'Assurer le suivi de la production (analyse des indicateurs, parametres)','CP4.1':'Realiser des interventions de maintenance de niveau 1 (inspection, surveillance)'};
+  var cpDescPLP2={'CP05':'Assurer le suivi de production lie a l\'analyse des indicateurs et parametres','CP08':'Proposer des ameliorations et des pistes de resolution de problemes'};
+  var cpDesc2=isCIP2?cpDescCIP2:isPMIA2?cpDescPMIA2:cpDescPLP2;
+
+  if(!isGRETA){
+  addH2('NOTATION PAR COMPETENCES PRONOTE',0.18,0.49,0.20);
+  var PN_BG2=[[0,0,0],[0.933,0,0],[1,0.753,0],[1,1,0],[0.573,0.816,0.314],[0.306,0.655,0.180],[0.153,0.325,0.090]];
+  addT('Code couleur Pronote :',8,true,0.3,0.3,0.3);
+  addSp(2);
+  var legY=y;
+  [[6,'Tres bonne maitrise'],[5,'Maitrise satisfaisante'],[4,'Presque maitrise'],[3,'Maitrise fragile'],[2,'Debut de maitrise'],[1,'Maitrise insuffisante']].forEach(function(it,idx){
+    var col=idx%3,row=Math.floor(idx/3);
+    var lx=ML+col*172,ly=legY-row*13;
+    rect(lx,ly-2,8,8,PN_BG2[it[0]][0],PN_BG2[it[0]][1],PN_BG2[it[0]][2]);
+    t(it[1],lx+11,ly-2,7,false,0.25,0.25,0.25);
+  });
+  y=legY-13-13;
+  addSp(4);
+  cpList2.forEach(function(cp,i){
+    var qs=i===0?Q_T1_PDF:Q_T2_PDF;
+    var ratio=pctPDF(qs),niveau=lvlPDF(ratio);
+    var ok=0,answered=0;
+    qs.forEach(function(n){if(scores['q'+n]!==undefined){answered++;if(scores['q'+n]===1)ok++;}});
+    chkY(16);
+    rect(ML,y-2,50,14,0.18,0.49,0.20);
+    t(cp,ML+3,y+1,9,true,1,1,1);
+    t(cpDesc2[cp]||cp,ML+55,y+1,8,false,0.2,0.2,0.2);
+    rect(ML+55,y-10,8,8,PN_BG2[niveau][0],PN_BG2[niveau][1],PN_BG2[niveau][2]);
+    t('Niveau '+niveau+'/6 - '+PN_LBL2[niveau]+' ('+ok+'/'+answered+')',ML+67,y-8,8,true,0.1,0.3,0.12);
+    y-=20;
+  });
+  addSp(6);addHL();addSp(4);
+  }
+
+  addH2('DETAIL DES 40 QUESTIONS',0.18,0.49,0.20);
+  var wQ=[20,145,50,45,CW-260];
+  addRow(['N','Question','Comp.','Resultat','Reponse'],wQ,true);
+  var ev2=false;
+  for(var q=1;q<=TOTAL_Q;q++){
+    var ok2=scores['q'+q];
+    var res=ok2===undefined?'- N/R':(ok2===1?'[OK] Juste':'[X] Faux');
+    var rep='';
+    try{
+      if([1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 20, 22, 28, 29, 32, 35, 36, 38, 39].indexOf(q)>=0){var sel=document.querySelector('input[name="q'+q+'"]:checked');rep=sel?'Option '+sel.value:'-';}
+      if(q===10){var cc=[];document.querySelectorAll('input[name="q10"]:checked').forEach(function(r){cc.push(r.value);});rep=cc.length?cc.join(','):'-';}
+      if(q===33){var cc=[];document.querySelectorAll('input[name="q33"]:checked').forEach(function(r){cc.push(r.value);});rep=cc.length?cc.join(','):'-';}
+      if(q===11)rep=document.getElementById('num11').value||'-';
+      if(q===12)rep=document.getElementById('num12').value||'-';
+      if(q===13)rep=document.getElementById('num13').value||'-';
+      if(q===14)rep=document.getElementById('num14').value||'-';
+      if(q===16)rep=document.getElementById('num16').value||'-';
+      if(q===17)rep=document.getElementById('num17').value||'-';
+      if(q===18)rep=document.getElementById('num18').value||'-';
+      if(q===19)rep=document.getElementById('num19').value||'-';
+      if(q===21)rep=document.getElementById('num21').value||'-';
+      if(q===23)rep=document.getElementById('num23').value||'-';
+      if(q===24)rep=document.getElementById('num24').value||'-';
+      if(q===25)rep=document.getElementById('num25').value||'-';
+      if(q===26)rep=document.getElementById('num26').value||'-';
+      if(q===27)rep=document.getElementById('num27').value||'-';
+      if(q===30)rep=document.getElementById('num30').value||'-';
+      if(q===31)rep=document.getElementById('num31').value||'-';
+      if(q===34)rep=document.getElementById('num34').value||'-';
+      if(q===37)rep=document.getElementById('num37').value||'-';
+      if(q===40)rep=(document.getElementById('a40').value||'').substring(0,50);
+    }catch(e){rep='-';}
+    addRow([q,qTitres[q].substring(0,55),qComp[''+q]||'-',res,rep.substring(0,50)],wQ,false,ev2);ev2=!ev2;
+  }
+  addSp(8);addHL();addSp(4);
+
+  addH2('RAPPORT DE MAINTENANCE – MAZAK QT-300',0.18,0.49,0.20);
+  wrapL(document.getElementById('a40').value.trim()||'(non redige)',90).forEach(function(l){chkY(12);t(l,ML,y,9,false,0.2,0.2,0.2);y-=13;});
+  addSp(8);addHL();addSp(4);
+
+
+  // ── TEMPS DE REPONSE PAR QUESTION ──
+  try{
+    addH2('TEMPS DE REPONSE PAR QUESTION',0.18,0.48,0.27);
+    var wH=[18,CW-215,45,50,52,50];
+    addRow(['N','Question','Heure','Tps rep.','Resultat','Obs.'],wH,true);
+    var evH=false;
+    for(var qi=1;qi<=TOTAL_Q;qi++){
+      var qt2=qTimestamps['q'+qi];var sc2=scores['q'+qi];
+      var hStr='-',dStr='-',obs2='',res2='-';
+      if(qt2&&qt2.validated){
+        var d2=new Date(qt2.validated);
+        hStr=String(d2.getHours()).padStart(2,'0')+':'+String(d2.getMinutes()).padStart(2,'0')+':'+String(d2.getSeconds()).padStart(2,'0');
+        var sec2=qt2.seconds||0;
+        dStr=sec2>60?Math.floor(sec2/60)+'min'+String(sec2%60).padStart(2,'0')+'s':sec2+'s';
+        res2=sc2===1?'[OK]':'[X]';
+        if(sec2<8)obs2='Tres rapide';else if(sec2<20)obs2='Rapide';else if(sec2>600)obs2='>10min';
+      }else{obs2='Non rep.';res2='-';}
+      addRow([qi,(qTitres[qi]||('Q'+qi)).toString().substring(0,28),hStr,dStr,res2,obs2],wH,false,evH);evH=!evH;
+    }
+    addSp(6);addHL();addSp(4);
+  }catch(e){}
+
+  addH2('INDICATEURS DE COMPORTEMENT',0.17,0.37,0.59);
+  var hh=Math.floor(stats.elapsed/3600),mm=Math.floor((stats.elapsed%3600)/60),ss=stats.elapsed%60;
+  addT('Temps total : '+fmtDur(stats.totalMs)+' | Chrono ecoule : '+hh+'h'+String(mm).padStart(2,'0')+'min'+String(ss).padStart(2,'0')+'s',9,true);
+  addT('Clavier actif : '+fmtDur(stats.keyMs)+' | Inactivite >30s : '+fmtDur(stats.inactMs)+' | Frappes : '+stats.keyCount,9,false,0.3,0.3,0.3);
+  if(stats.pasteCount===0)addT('Copier-coller : aucun detecte',9,false,0.18,0.48,0.27);
+  else{addT('Copier-coller : '+stats.pasteCount+' occurrence(s)',9,true,0.7,0.1,0.1);stats.pasteDetails.forEach(function(p){addT('  -> '+p.zone+' a '+p.heure,8,false,0.5,0.1,0.1,8);});}
+
+  pages.forEach(function(pg,pi){
+    pg.parts.push('BT /F1 7 Tf 0.5 0.5 0.5 rg '+ML+' 20 Td (TP MTBF/MTTR – Mazak QT-300 | Lycee Vaucanson Grenoble | '+dateStr+' | Page '+(pi+1)+'/'+pages.length+') Tj ET');
+    pg.parts.push('0.7 0.7 0.7 RG 0.5 w '+ML+' 30 m '+(W-MR)+' 30 l S');
+  });
+
+  var objs=[];
+  objs.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj');
+  objs.push('2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj');
+  var pageIds=[],nextId=3;
+  pages.forEach(function(pg){var content=pg.parts.join('\n');var cid=nextId++;var pid=nextId++;pageIds.push(pid);objs.push(cid+' 0 obj\n<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream\nendobj');objs.push(pid+' 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+W+' '+H+']\n/Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> >> >>\n/Contents '+cid+' 0 R >>\nendobj');});
+  objs[1]='2 0 obj\n<< /Type /Pages /Kids ['+pageIds.join(' 0 R ')+' 0 R] /Count '+pages.length+' >>\nendobj';
+  var body='%PDF-1.4\n';var offs=[];
+  objs.forEach(function(o){offs.push(body.length);body+=o+'\n';});
+  var xref='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n';
+  offs.forEach(function(o){xref+=(Array(11).join('0')+o).slice(-10)+' 00000 n \n';});
+  var full=body+xref+'trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R >>\nstartxref\n'+body.length+'\n%%EOF';
+  var fn='TP_MTBF_MTTR_'+classe+'_'+(nom+'_'+prenom).replace(/\s+/g,'_')+'.pdf';
+  var blob=new Blob([full],{type:'application/pdf'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=fn;a.click();
+  setTimeout(function(){URL.revokeObjectURL(url);},3000);
+}
+</script>
+</body>
+</html>
